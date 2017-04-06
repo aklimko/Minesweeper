@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017-03-13 21:42:21 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="db.Highscore" table="records" catalog="minesweeper">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity"></generator>
+        </id>
+        <property name="name" type="java.lang.String">
+            <column name="name" />
+        </property>
+        <property name="score" type="java.lang.Integer">
+            <column name="score" />
+        </property>
+    </class>
+</hibernate-mapping>
