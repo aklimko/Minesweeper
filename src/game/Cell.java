@@ -10,32 +10,32 @@ import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-public class Cell extends Coordinates {
+class Cell extends Coordinates {
     private JButton button;
     private int value;
     private Color color;
-    private static Image imgFlag, imgBombCrossed;
-    
+    private static Image imgFlag, imgMineCrossed;
+
     private boolean mined, clicked, flagged;
-    private static boolean active = true;
-    
+    private static boolean active;
+
     public Cell(){
         mined = false;
         clicked = false;
         flagged = false;
     }
-    
-    public JButton makeCell(int i, int j, int sizeButton){
+
+    public JButton makeCell(int i, int j){
         row=i;
         col=j;
         button = new JButton();
-        button.setMaximumSize(new Dimension(sizeButton, sizeButton));
+        button.setMaximumSize(new Dimension(Game.getSizeButton(), Game.getSizeButton()));
         button.setMargin(new Insets(0,0,0,0));
         button.setFont(button.getFont().deriveFont(24f));
-        button.setPreferredSize(new Dimension(sizeButton, sizeButton));
+        button.setPreferredSize(new Dimension(Game.getSizeButton(), Game.getSizeButton()));
         button.setFocusPainted(false);
         button.setVisible(true);
-        
+
         button.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseReleased(MouseEvent e){
@@ -55,7 +55,7 @@ public class Cell extends Coordinates {
                 }
             }
         });
-        
+
         button.addActionListener((ActionEvent e) -> {
             if(!flagged && active){
                 button.setContentAreaFilled(false);
@@ -83,6 +83,7 @@ public class Cell extends Coordinates {
                         Game.freezeGame();
                         Game.makeRed(row, col);
                         Game.revealMines();
+                        Game.revealWrongFlagged();
                     }
                 }
             }
@@ -90,92 +91,87 @@ public class Cell extends Coordinates {
         return button;
     }
 
-    public void setColor(int val){
-        switch(val){
+    public void setColor(int value){
+        switch(value){
             case 0:
                 color = Color.BLACK;
-                button.setForeground(color);
                 break;
             case 1:
                 color = Color.BLUE;
-                button.setForeground(color);
                 break;
             case 2:
                 color = Color.GREEN.darker();
-                button.setForeground(color);
                 break;
             case 3:
                 color = Color.RED;
-                button.setForeground(color);
                 break;
             case 4:
                 color = Color.BLUE.darker();
-                button.setForeground(color);
                 break;
             case 5:
                 color = Color.RED.darker();
-                button.setForeground(color);
                 break;
             case 6:
                 color = Color.CYAN.darker();
-                button.setForeground(color);
                 break;
             case 7:
                 color = Color.BLACK;
-                button.setForeground(color);
                 break;
             case 8:
                 color = Color.GRAY;
-                button.setForeground(color);
                 break;
             default:
                 color = Color.BLACK;
-                button.setForeground(color);
                 break;
         }
+        button.setForeground(color);
     }
-    
+
     public static void setImages(Image imgFlag, Image imgMineCrossed){
         Cell.imgFlag = imgFlag;
-        Cell.imgBombCrossed = imgMineCrossed;
+        Cell.imgMineCrossed = imgMineCrossed;
     }
-    
+
     public void setText(String text){
         if(!text.equals("0")){
             button.setText(text);
         }
     }
-    
+
     public void setMined(boolean mined){
         this.mined = mined;
     }
-    
+
     public int isMined(){
         return mined ? 1 : 0;
     }
-    
+
     public void setValue(int value){
         this.value = value;
     }
-    
+
     public int getValue(){
         return value;
     }
-    
+
     public JButton getButton(){
         return button;
     }
-    
+
     public boolean isClicked() {
         return clicked;
     }
-    
-    public void setClicked(boolean clicked) {
-        this.clicked = clicked;
+
+    public void setClickedToFalse() {
+        this.clicked = false;
     }
-    
-    public void setFlagged(boolean flagged) {
-        this.flagged = flagged;
+
+    public void setFlaggedToFalse() {
+        this.flagged = false;
+    }
+
+    public void setImgMineCrossed(){
+        button.setIcon(new ImageIcon(imgMineCrossed));
     }
 
     public boolean isFlagged() {
@@ -184,5 +180,9 @@ public class Cell extends Coordinates {
 
     public static void setActive(boolean active) {
         Cell.active = active;
+    }
+
+    public static boolean isActive() {
+        return active;
     }
 }
