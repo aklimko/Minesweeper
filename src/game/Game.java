@@ -80,10 +80,6 @@ class Game {
         height = panelInfoHeight + panelMainHeight + 80;
     }
 
-    private static Point getWindowLocation() {
-        return frame.getLocationOnScreen();
-    }
-
     private static void setLevel(int level) {
         clickedCells = 0;
         switch (level) {
@@ -278,8 +274,12 @@ class Game {
     private static void restartGame() {
         if (!Cell.isActive()) {
             Cell.setActive(true);
-            cells[redX][redY].getButton().setBackground(backgroundColor);
-            won = false;
+            if (!won) {
+                cells[redX][redY].getButton().setBackground(backgroundColor);
+            }
+            else {
+                won = false;
+            }
         }
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -563,10 +563,15 @@ class Game {
 
         minesLeft = numMines;
         firstClicked = false;
+        won = false;
 
         initTimer();
         generateCells();
         Cell.setImages(imgFlag, imgMineCrossed);
+    }
+
+    private static Point getWindowLocation() {
+        return frame.getLocationOnScreen();
     }
 
     public static boolean isFirstClicked() {
@@ -607,6 +612,6 @@ class Game {
 
     public static void main(String[] args) {
         Settings.loadFromFile();
-        javax.swing.SwingUtilities.invokeLater(() -> new Game());
+        javax.swing.SwingUtilities.invokeLater(Game::new);
     }
 }
