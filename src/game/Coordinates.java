@@ -1,10 +1,10 @@
 package game;
 
 class Coordinates {
-    int row;
-    int col;
+    protected int row;
+    protected int col;
 
-    Coordinates() {
+    public Coordinates() {
     }
 
     public Coordinates(int row, int col) {
@@ -16,16 +16,8 @@ class Coordinates {
         return row;
     }
 
-    public void setRow(int row) {
-        this.row = row;
-    }
-
     public int getCol() {
         return col;
-    }
-
-    public void setCol(int col) {
-        this.col = col;
     }
 
     @Override

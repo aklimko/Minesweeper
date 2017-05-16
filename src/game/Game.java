@@ -73,13 +73,6 @@ class Game {
         Cell.setActive(true);
     }
 
-    private static void setWindowSize() {
-        panelWidth = sizeButton * columns;
-        panelMainHeight = sizeButton * rows;
-        width = panelWidth + 50;
-        height = panelInfoHeight + panelMainHeight + 80;
-    }
-
     private static void setLevel(int level) {
         clickedCells = 0;
         switch (level) {
@@ -103,239 +96,43 @@ class Game {
         }
     }
 
-    private static ArrayList findNeighbours(int row, int col) {
-        ArrayList<Coordinates> neighbours = new ArrayList<>();
-        if ((row > 0 && row < rows - 1) && (col > 0 && col < columns - 1)) {
-            neighbours.add(new Coordinates(row - 1, col - 1));
-            neighbours.add(new Coordinates(row, col - 1));
-            neighbours.add(new Coordinates(row + 1, col - 1));
-            neighbours.add(new Coordinates(row - 1, col + 1));
-            neighbours.add(new Coordinates(row, col + 1));
-            neighbours.add(new Coordinates(row + 1, col + 1));
-            neighbours.add(new Coordinates(row - 1, col));
-            neighbours.add(new Coordinates(row + 1, col));
-        } else if (row == 0 && col == 0) {
-            neighbours.add(new Coordinates(0, 1));
-            neighbours.add(new Coordinates(1, 0));
-            neighbours.add(new Coordinates(1, 1));
-        } else if (row == 0 && col == columns - 1) {
-            neighbours.add(new Coordinates(0, col - 1));
-            neighbours.add(new Coordinates(1, col - 1));
-            neighbours.add(new Coordinates(1, col));
-        } else if (row == rows - 1 && col == columns - 1) {
-            neighbours.add(new Coordinates(row, col - 1));
-            neighbours.add(new Coordinates(row - 1, col - 1));
-            neighbours.add(new Coordinates(row - 1, col));
-        } else if (row == rows - 1 && col == 0) {
-            neighbours.add(new Coordinates(row, 1));
-            neighbours.add(new Coordinates(row - 1, 1));
-            neighbours.add(new Coordinates(row - 1, 0));
-        } else if (row == 0) {
-            neighbours.add(new Coordinates(row, col - 1));
-            neighbours.add(new Coordinates(row, col + 1));
-            neighbours.add(new Coordinates(row + 1, col - 1));
-            neighbours.add(new Coordinates(row + 1, col));
-            neighbours.add(new Coordinates(row + 1, col + 1));
-        } else if (row == rows - 1) {
-            neighbours.add(new Coordinates(row, col - 1));
-            neighbours.add(new Coordinates(row, col + 1));
-            neighbours.add(new Coordinates(row - 1, col - 1));
-            neighbours.add(new Coordinates(row - 1, col));
-            neighbours.add(new Coordinates(row - 1, col + 1));
-        } else if (col == 0) {
-            neighbours.add(new Coordinates(row - 1, col));
-            neighbours.add(new Coordinates(row + 1, col));
-            neighbours.add(new Coordinates(row - 1, col + 1));
-            neighbours.add(new Coordinates(row, col + 1));
-            neighbours.add(new Coordinates(row + 1, col + 1));
-        } else if (col == columns - 1) {
-            neighbours.add(new Coordinates(row - 1, col));
-            neighbours.add(new Coordinates(row + 1, col));
-            neighbours.add(new Coordinates(row - 1, col - 1));
-            neighbours.add(new Coordinates(row, col - 1));
-            neighbours.add(new Coordinates(row + 1, col - 1));
-        }
-        return neighbours;
+    private static void setWindowSize() {
+        panelWidth = sizeButton * columns;
+        panelMainHeight = sizeButton * rows;
+        width = panelWidth + 50;
+        height = panelInfoHeight + panelMainHeight + 80;
     }
 
-    public static void revealNeighbours(int row, int col) {
-        ArrayList<Coordinates> neighbours;
-        neighbours = findNeighbours(row, col);
-        for (Coordinates neighbour : neighbours) {
-            int x = neighbour.getRow();
-            int y = neighbour.getCol();
-            if (!cells[x][y].isClicked()) {
-                cells[x][y].getButton().doClick(0);
-            }
-        }
-    }
-
-    public static void checkWin() {
-        if (!won) {
-            if (clickedCells == rows * columns - numMines) {
-                won = true;
-                freezeGame();
-                new Win(Integer.parseInt(labelSeconds.getText()), getWindowLocation(), Settings.getCurrentLevel());
-            }
-        }
-    }
-
-    private static void checkValue() {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                if (cells[i][j].isMined() == 0) {
-                    int number = countNearbyMines(i, j);
-                    cells[i][j].setColor(number);
-                    cells[i][j].setValue(number);
+    private void start() {
+        loadImages();
+        drawFrame();
+        drawPanelMain();
+        drawPanelInfo();
+        drawMenu();
+        panelMain.addKeyListener(new KeyListener() {
+            @Override
+            public void keyPressed(KeyEvent ke) {
+                if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
+                    restartGame();
                 }
             }
-        }
-    }
 
-    private static int countNearbyMines(int row, int col) {
-        int count = 0;
-        ArrayList<Coordinates> neighbours;
-        neighbours = findNeighbours(row, col);
-        for (Coordinates neighbour : neighbours) {
-            count += cells[neighbour.getRow()][neighbour.getCol()].isMined();
-        }
-        return count;
-    }
-
-    public static int getPosition(int row, int col) {
-        return row * columns + col;
-    }
-
-    public static void clickedNeighbours(int row, int col) {
-        int value = cells[row][col].getValue();
-        int numFlagged = 0;
-
-        ArrayList<Coordinates> neighbours = findNeighbours(row, col);
-
-        for (Coordinates neighbour : neighbours) {
-            int x = neighbour.getRow();
-            int y = neighbour.getCol();
-            if (!cells[x][y].isClicked() && cells[x][y].isFlagged()) {
-                numFlagged++;
+            @Override
+            public void keyReleased(KeyEvent ke) {
             }
-        }
-        if (value == numFlagged) {
-            for (Coordinates neighbour : neighbours) {
-                int x = neighbour.getRow();
-                int y = neighbour.getCol();
-                if (!cells[x][y].isClicked() && !cells[x][y].isFlagged()) {
-                    cells[x][y].getButton().doClick(0);
-                }
-            }
-        }
-    }
 
-    private static Coordinates convertPositionToCoordinates(int position) {
-        int row = position / columns;
-        while (position >= columns) {
-            position %= columns;
-        }
-        int col = position;
-        return new Coordinates(row, col);
-    }
-
-    public static void generateMines(int numMines, int row, int col) {
-        Random random = new Random();
-        ArrayList<Coordinates> temp = new ArrayList<>();
-
-        if (Settings.isSaferFirstClick()) {
-            temp = findNeighbours(row, col);
-        }
-        temp.add(new Coordinates(row, col));
-
-        int generatedMinesCounter = 0;
-        while (generatedMinesCounter < numMines) {
-            Coordinates coordinate = convertPositionToCoordinates(random.nextInt(rows * columns));
-            if (!temp.contains(coordinate)) {
-                temp.add(coordinate);
-                cells[coordinate.getRow()][coordinate.getCol()].setMined(true);
-                generatedMinesCounter++;
+            @Override
+            public void keyTyped(KeyEvent ke) {
             }
-        }
-        checkValue();
-    }
+        });
 
-    private static void generateCells() {
-        cells = new Cell[rows][columns];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                cells[i][j] = new Cell();
-                button = cells[i][j].makeCell(i, j);
-                panelMain.add(button);
-            }
-        }
-    }
-
-    private static void restartGame() {
-        if (!Cell.isActive()) {
-            Cell.setActive(true);
-            if (!won) {
-                cells[redX][redY].getButton().setBackground(backgroundColor);
-            }
-            else {
-                won = false;
-            }
-        }
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                cells[i][j].setMined(false);
-                cells[i][j].getButton().setContentAreaFilled(true);
-                cells[i][j].getButton().setIcon(null);
-                cells[i][j].setText("");
-                cells[i][j].setClickedToFalse();
-                cells[i][j].setFlaggedToFalse();
-                cells[i][j].setValue(0);
-                cells[i][j].setColor(0);
-            }
-        }
-        labelMines.setText(Integer.toString(numMines));
-        labelSeconds.setText("0");
-        timer.cancel();
-        seconds = 0;
-        clickedCells = 0;
         minesLeft = numMines;
         firstClicked = false;
-    }
+        won = false;
 
-    public static void addClickedCellsCounter() {
-        clickedCells++;
-    }
-
-    public static void freezeGame() {
-        timer.cancel();
-        Cell.setActive(false);
-    }
-
-    public static void makeRed(int row, int col) {
-        redX = row;
-        redY = col;
-        cells[row][col].getButton().setOpaque(true);
-        cells[row][col].getButton().setBackground(Color.RED);
-    }
-
-    public static void revealMines() {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                if (cells[i][j].isMined() == 1 && !cells[i][j].isFlagged()) {
-                    cells[i][j].getButton().setIcon(new ImageIcon(imgMine));
-                }
-            }
-        }
-    }
-
-    public static void revealWrongFlagged() {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                if (cells[i][j].isMined() == 0 && cells[i][j].isFlagged()) {
-                    cells[i][j].setImgMineCrossed();
-                }
-            }
-        }
+        initTimer();
+        generateCells();
+        Cell.setImages(imgFlag, imgMineCrossed);
     }
 
     private void loadImages() {
@@ -348,35 +145,21 @@ class Game {
         }
     }
 
-    private static void initTimer() {
-        seconds = 0;
-        timer = new Timer();
-        timerTask = new TimerTask() {
+    private void drawFrame() {
+        frame = new JFrame();
+        frame.setTitle("Minesweeper");
+        frame.setSize(width, height);
+        frame.setPreferredSize(new Dimension(width, height));
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
             @Override
-            public void run() {
-                labelSeconds.setText(Integer.toString(++seconds));
+            public void windowClosing(WindowEvent e) {
+                Settings.checkIfChanged();
             }
-        };
-    }
-
-    public static void startTimer() {
-        seconds = 0;
-        timer = new Timer();
-        timerTask.cancel();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                labelSeconds.setText(Integer.toString(seconds++));
-            }
-        }, 0, 1000);
-    }
-
-    public static void plusMine() {
-        labelMines.setText(Integer.toString(++minesLeft));
-    }
-
-    public static void minusMine() {
-        labelMines.setText(Integer.toString(--minesLeft));
+        });
+        frame.setResizable(false);
+        frame.setLayout(null);
     }
 
     private static void drawPanelMain() {
@@ -426,30 +209,6 @@ class Game {
         gbc.insets = new Insets(0, gap, 0, 0);
         panelInfo.add(labelSeconds, gbc);
         frame.add(panelInfo);
-    }
-
-    private static void restartFrame(int level, Point point) {
-        frame.removeAll();
-        frame.dispose();
-        timer.cancel();
-        Settings.setCurrentLevel(level);
-        new Game(point);
-    }
-
-    private static void setSaferFirstClickText() {
-        if (Settings.isSaferFirstClick()) {
-            settingsSaferFirstClick.setText("\u221ASafer first click");
-        } else {
-            settingsSaferFirstClick.setText("Safer first click");
-        }
-    }
-
-    private static void setSafeRevealText() {
-        if (Settings.isSafeReveal()) {
-            settingsSafeReveal.setText("\u221ASafe reveal");
-        } else {
-            settingsSafeReveal.setText("Safe reveal");
-        }
     }
 
     private static void drawMenu() {
@@ -516,21 +275,57 @@ class Game {
         frame.setJMenuBar(menuBar);
     }
 
-    private void drawFrame() {
-        frame = new JFrame();
-        frame.setTitle("Minesweeper");
-        frame.setSize(width, height);
-        frame.setPreferredSize(new Dimension(width, height));
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                Settings.checkIfChanged();
+    private static void restartGame() {
+        if (!Cell.isActive()) {
+            Cell.setActive(true);
+            if (!won) {
+                cells[redX][redY].getButton().setBackground(backgroundColor);
             }
-        });
-        frame.setResizable(false);
-        frame.setLayout(null);
+            else {
+                won = false;
+            }
+        }
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                cells[i][j].setMined(false);
+                cells[i][j].getButton().setContentAreaFilled(true);
+                cells[i][j].getButton().setIcon(null);
+                cells[i][j].clearText();
+                cells[i][j].setClickedToFalse();
+                cells[i][j].setFlaggedToFalse();
+                cells[i][j].setValue(0);
+                cells[i][j].setColor(0);
+            }
+        }
+        labelMines.setText(Integer.toString(numMines));
+        labelSeconds.setText("0");
+        timer.cancel();
+        seconds = 0;
+        clickedCells = 0;
+        minesLeft = numMines;
+        firstClicked = false;
+    }
+
+    private static void initTimer() {
+        seconds = 0;
+        timer = new Timer();
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                labelSeconds.setText(Integer.toString(++seconds));
+            }
+        };
+    }
+
+    private static void generateCells() {
+        cells = new Cell[rows][columns];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                cells[i][j] = new Cell();
+                button = cells[i][j].makeCell(i, j);
+                panelMain.add(button);
+            }
+        }
     }
 
     private static void showFrame() {
@@ -538,36 +333,237 @@ class Game {
         frame.setVisible(true);
     }
 
-    private void start() {
-        loadImages();
-        drawFrame();
-        drawPanelMain();
-        drawPanelInfo();
-        drawMenu();
-        panelMain.addKeyListener(new KeyListener() {
-            @Override
-            public void keyPressed(KeyEvent ke) {
-                if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
-                    restartGame();
+    public static void clickedNeighbours(int row, int col) {
+        int value = cells[row][col].getValue();
+        int numFlagged = 0;
+
+        ArrayList<Coordinates> neighbours = findNeighbours(row, col);
+
+        for (Coordinates neighbour : neighbours) {
+            int x = neighbour.getRow();
+            int y = neighbour.getCol();
+            if (!cells[x][y].isClicked() && cells[x][y].isFlagged()) {
+                numFlagged++;
+            }
+        }
+        if (value == numFlagged) {
+            for (Coordinates neighbour : neighbours) {
+                int x = neighbour.getRow();
+                int y = neighbour.getCol();
+                if (!cells[x][y].isClicked() && !cells[x][y].isFlagged()) {
+                    cells[x][y].getButton().doClick(0);
                 }
             }
+        }
+    }
 
-            @Override
-            public void keyReleased(KeyEvent ke) {
+    private static ArrayList findNeighbours(int row, int col) {
+        ArrayList<Coordinates> neighbours = new ArrayList<>();
+        if ((row > 0 && row < rows - 1) && (col > 0 && col < columns - 1)) {
+            neighbours.add(new Coordinates(row - 1, col - 1));
+            neighbours.add(new Coordinates(row, col - 1));
+            neighbours.add(new Coordinates(row + 1, col - 1));
+            neighbours.add(new Coordinates(row - 1, col + 1));
+            neighbours.add(new Coordinates(row, col + 1));
+            neighbours.add(new Coordinates(row + 1, col + 1));
+            neighbours.add(new Coordinates(row - 1, col));
+            neighbours.add(new Coordinates(row + 1, col));
+        } else if (row == 0 && col == 0) {
+            neighbours.add(new Coordinates(0, 1));
+            neighbours.add(new Coordinates(1, 0));
+            neighbours.add(new Coordinates(1, 1));
+        } else if (row == 0 && col == columns - 1) {
+            neighbours.add(new Coordinates(0, col - 1));
+            neighbours.add(new Coordinates(1, col - 1));
+            neighbours.add(new Coordinates(1, col));
+        } else if (row == rows - 1 && col == columns - 1) {
+            neighbours.add(new Coordinates(row, col - 1));
+            neighbours.add(new Coordinates(row - 1, col - 1));
+            neighbours.add(new Coordinates(row - 1, col));
+        } else if (row == rows - 1 && col == 0) {
+            neighbours.add(new Coordinates(row, 1));
+            neighbours.add(new Coordinates(row - 1, 1));
+            neighbours.add(new Coordinates(row - 1, 0));
+        } else if (row == 0) {
+            neighbours.add(new Coordinates(row, col - 1));
+            neighbours.add(new Coordinates(row, col + 1));
+            neighbours.add(new Coordinates(row + 1, col - 1));
+            neighbours.add(new Coordinates(row + 1, col));
+            neighbours.add(new Coordinates(row + 1, col + 1));
+        } else if (row == rows - 1) {
+            neighbours.add(new Coordinates(row, col - 1));
+            neighbours.add(new Coordinates(row, col + 1));
+            neighbours.add(new Coordinates(row - 1, col - 1));
+            neighbours.add(new Coordinates(row - 1, col));
+            neighbours.add(new Coordinates(row - 1, col + 1));
+        } else if (col == 0) {
+            neighbours.add(new Coordinates(row - 1, col));
+            neighbours.add(new Coordinates(row + 1, col));
+            neighbours.add(new Coordinates(row - 1, col + 1));
+            neighbours.add(new Coordinates(row, col + 1));
+            neighbours.add(new Coordinates(row + 1, col + 1));
+        } else if (col == columns - 1) {
+            neighbours.add(new Coordinates(row - 1, col));
+            neighbours.add(new Coordinates(row + 1, col));
+            neighbours.add(new Coordinates(row - 1, col - 1));
+            neighbours.add(new Coordinates(row, col - 1));
+            neighbours.add(new Coordinates(row + 1, col - 1));
+        }
+        return neighbours;
+    }
+
+    public static void addClickedCellsCounter() {
+        clickedCells++;
+    }
+
+    public static void generateMines(int numMines, int row, int col) {
+        Random random = new Random();
+        ArrayList<Coordinates> temp = new ArrayList<>();
+
+        if (Settings.isSaferFirstClick()) {
+            temp = findNeighbours(row, col);
+        }
+        temp.add(new Coordinates(row, col));
+
+        int generatedMinesCounter = 0;
+        while (generatedMinesCounter < numMines) {
+            Coordinates coordinate = convertPositionToCoordinates(random.nextInt(rows * columns));
+            if (!temp.contains(coordinate)) {
+                temp.add(coordinate);
+                cells[coordinate.getRow()][coordinate.getCol()].setMined(true);
+                generatedMinesCounter++;
             }
+        }
+        checkValues();
+    }
 
-            @Override
-            public void keyTyped(KeyEvent ke) {
+    private static Coordinates convertPositionToCoordinates(int position) {
+        int row = position / columns;
+        while (position >= columns) {
+            position %= columns;
+        }
+        int col = position;
+        return new Coordinates(row, col);
+    }
+
+    private static void checkValues() {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (cells[i][j].isMined() == 0) {
+                    int number = countNearbyMines(i, j);
+                    cells[i][j].setColor(number);
+                    cells[i][j].setValue(number);
+                }
             }
-        });
+        }
+    }
 
-        minesLeft = numMines;
-        firstClicked = false;
-        won = false;
+    private static int countNearbyMines(int row, int col) {
+        int count = 0;
+        ArrayList<Coordinates> neighbours;
+        neighbours = findNeighbours(row, col);
+        for (Coordinates neighbour : neighbours) {
+            count += cells[neighbour.getRow()][neighbour.getCol()].isMined();
+        }
+        return count;
+    }
 
-        initTimer();
-        generateCells();
-        Cell.setImages(imgFlag, imgMineCrossed);
+    public static void startTimer() {
+        seconds = 0;
+        timer = new Timer();
+        timerTask.cancel();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                labelSeconds.setText(Integer.toString(seconds++));
+            }
+        }, 0, 1000);
+    }
+
+    public static void revealNeighbours(int row, int col) {
+        ArrayList<Coordinates> neighbours;
+        neighbours = findNeighbours(row, col);
+        for (Coordinates neighbour : neighbours) {
+            int x = neighbour.getRow();
+            int y = neighbour.getCol();
+            if (!cells[x][y].isClicked()) {
+                cells[x][y].getButton().doClick(0);
+            }
+        }
+    }
+
+    public static void checkWin() {
+        if (!won) {
+            if (clickedCells == rows * columns - numMines) {
+                won = true;
+                freezeGame();
+                new Win(Integer.parseInt(labelSeconds.getText()), getWindowLocation(), Settings.getCurrentLevel());
+            }
+        }
+    }
+
+    public static void freezeGame() {
+        timer.cancel();
+        Cell.setActive(false);
+    }
+
+    public static void makeRed(int row, int col) {
+        redX = row;
+        redY = col;
+        cells[row][col].getButton().setOpaque(true);
+        cells[row][col].getButton().setBackground(Color.RED);
+    }
+
+    public static void revealMines() {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (cells[i][j].isMined() == 1 && !cells[i][j].isFlagged()) {
+                    cells[i][j].getButton().setIcon(new ImageIcon(imgMine));
+                }
+            }
+        }
+    }
+
+    public static void revealWrongFlagged() {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (cells[i][j].isMined() == 0 && cells[i][j].isFlagged()) {
+                    cells[i][j].setImgMineCrossed();
+                }
+            }
+        }
+    }
+
+    public static void plusMine() {
+        labelMines.setText(Integer.toString(++minesLeft));
+    }
+
+    public static void minusMine() {
+        labelMines.setText(Integer.toString(--minesLeft));
+    }
+
+    private static void restartFrame(int level, Point point) {
+        frame.removeAll();
+        frame.dispose();
+        timer.cancel();
+        Settings.setCurrentLevel(level);
+        new Game(point);
+    }
+
+    private static void setSaferFirstClickText() {
+        if (Settings.isSaferFirstClick()) {
+            settingsSaferFirstClick.setText("\u221ASafer first click");
+        } else {
+            settingsSaferFirstClick.setText("Safer first click");
+        }
+    }
+
+    private static void setSafeRevealText() {
+        if (Settings.isSafeReveal()) {
+            settingsSafeReveal.setText("\u221ASafe reveal");
+        } else {
+            settingsSafeReveal.setText("Safe reveal");
+        }
     }
 
     private static Point getWindowLocation() {
@@ -586,28 +582,8 @@ class Game {
         return numMines;
     }
 
-    public static int getColumns() {
-        return columns;
-    }
-
-    public static Image getImgMine() {
-        return imgMine;
-    }
-
-    public static Timer getTimer() {
-        return timer;
-    }
-
     public static int getSizeButton() {
         return sizeButton;
-    }
-
-    public static int getWindowWidth() {
-        return width;
-    }
-
-    public static int getWindowHeight() {
-        return height;
     }
 
     public static void main(String[] args) {

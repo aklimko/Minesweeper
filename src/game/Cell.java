@@ -132,10 +132,8 @@ class Cell extends Coordinates {
         Cell.imgMineCrossed = imgMineCrossed;
     }
 
-    public void setText(String text){
-        if(!text.equals("0")){
-            button.setText(text);
-        }
+    public void clearText(){
+        button.setText("");
     }
 
     public void setMined(boolean mined){
