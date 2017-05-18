@@ -13,40 +13,38 @@ import javax.swing.JButton;
 class Cell extends Coordinates {
     private JButton button;
     private int value;
-    private Color color;
     private static Image imgFlag, imgMineCrossed;
 
     private boolean mined, clicked, flagged;
     private static boolean active;
 
-    public Cell(){
+    public Cell() {
         mined = false;
         clicked = false;
         flagged = false;
     }
 
-    public JButton makeCell(int i, int j){
-        row=i;
-        col=j;
+    public JButton makeCell(int i, int j) {
+        row = i;
+        col = j;
         button = new JButton();
         button.setMaximumSize(new Dimension(Game.getSizeButton(), Game.getSizeButton()));
-        button.setMargin(new Insets(0,0,0,0));
+        button.setMargin(new Insets(0, 0, 0, 0));
         button.setFont(button.getFont().deriveFont(24f));
         button.setPreferredSize(new Dimension(Game.getSizeButton(), Game.getSizeButton()));
         button.setFocusPainted(false);
         button.setVisible(true);
 
-        button.addMouseListener(new MouseAdapter(){
+        button.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseReleased(MouseEvent e){
-                if(e.getButton() == 3) {
-                    if(!clicked && active){
-                        if(!flagged){
+            public void mouseReleased(MouseEvent e) {
+                if (e.getButton() == 3) {
+                    if (!clicked && active) {
+                        if (!flagged) {
                             flagged = true;
                             Game.minusMine();
                             button.setIcon(new ImageIcon(imgFlag));
-                        }
-                        else{
+                        } else {
                             flagged = false;
                             Game.plusMine();
                             button.setIcon(null);
@@ -56,30 +54,27 @@ class Cell extends Coordinates {
             }
         });
 
-        button.addActionListener((ActionEvent e) -> {
-            if(!flagged && active){
+        button.addActionListener(e -> {
+            if (!flagged && active) {
                 button.setContentAreaFilled(false);
-                if (clicked && Settings.isSafeReveal()){
+                if (clicked && Settings.isSafeReveal()) {
                     Game.clickedNeighbours(row, col);
-                }
-                else{
+                } else {
                     clicked = true;
                     Game.addClickedCellsCounter();
-                    if(!Game.isFirstClicked()){
+                    if (!Game.isFirstClicked()) {
                         Game.generateMines(Game.getNumMines(), row, col);
                         Game.setFirstClicked(true);
                         Game.startTimer();
                     }
-                    if(!mined){
-                        if(value!=0){
+                    if (!mined) {
+                        if (value != 0) {
                             button.setText(Integer.toString(value));
-                        }
-                        else{
+                        } else {
                             Game.revealNeighbours(row, col);
                         }
                         Game.checkWin();
-                    }
-                    else{
+                    } else {
                         Game.freezeGame();
                         Game.makeRed(row, col);
                         Game.revealMines();
@@ -91,8 +86,9 @@ class Cell extends Coordinates {
         return button;
     }
 
-    public void setColor(int value){
-        switch(value){
+    public void setColor(int value) {
+        Color color;
+        switch (value) {
             case 0:
                 color = Color.BLACK;
                 break;
@@ -127,32 +123,32 @@ class Cell extends Coordinates {
         button.setForeground(color);
     }
 
-    public static void setImages(Image imgFlag, Image imgMineCrossed){
+    public static void setImages(Image imgFlag, Image imgMineCrossed) {
         Cell.imgFlag = imgFlag;
         Cell.imgMineCrossed = imgMineCrossed;
     }
 
-    public void clearText(){
+    public void clearText() {
         button.setText("");
     }
 
-    public void setMined(boolean mined){
+    public void setMined(boolean mined) {
         this.mined = mined;
     }
 
-    public int isMined(){
+    public int isMined() {
         return mined ? 1 : 0;
     }
 
-    public void setValue(int value){
+    public void setValue(int value) {
         this.value = value;
     }
 
-    public int getValue(){
+    public int getValue() {
         return value;
     }
 
-    public JButton getButton(){
+    public JButton getButton() {
         return button;
     }
 
@@ -168,7 +164,7 @@ class Cell extends Coordinates {
         this.flagged = false;
     }
 
-    public void setImgMineCrossed(){
+    public void setImgMineCrossed() {
         button.setIcon(new ImageIcon(imgMineCrossed));
     }
 

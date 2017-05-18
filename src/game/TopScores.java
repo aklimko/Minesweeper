@@ -37,8 +37,10 @@ class TopScores extends JFrame {
 
         panelEasy = new JPanel();
         panelIntermediate = new JPanel();
+        panelExpert = new JPanel();
         panel.add(panelEasy, "Panel1");
         panel.add(panelIntermediate, "Panel2");
+        panel.add(panelExpert, "Panel3");
         add(panel);
         setVisible(true);
     }

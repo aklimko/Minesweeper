@@ -8,11 +8,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -29,7 +25,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
 class Game {
@@ -54,7 +49,7 @@ class Game {
     private static JLabel labelMines, labelSeconds;
     private static JMenuBar menuBar;
     private static JMenu menuGame, menuSettings;
-    private static JMenuItem gameEasy, gameIntermediate, gameExpert, gameTop, settingsSaferFirstClick, settingsSafeReveal;
+    private static JMenuItem gameEasy, gameIntermediate, gameExpert, settingsSaferFirstClick, settingsSafeReveal;
 
     private Game() {
         setLevel(Settings.getCurrentLevel());
@@ -109,22 +104,6 @@ class Game {
         drawPanelMain();
         drawPanelInfo();
         drawMenu();
-        panelMain.addKeyListener(new KeyListener() {
-            @Override
-            public void keyPressed(KeyEvent ke) {
-                if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
-                    restartGame();
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent ke) {
-            }
-
-            @Override
-            public void keyTyped(KeyEvent ke) {
-            }
-        });
 
         minesLeft = numMines;
         firstClicked = false;
@@ -183,7 +162,7 @@ class Game {
         backgroundColor = buttonRetry.getBackground();
         buttonRetry.setText("Retry");
         buttonRetry.setFocusable(false);
-        buttonRetry.addActionListener((ActionEvent e) -> restartGame());
+        buttonRetry.addActionListener(e -> restartGame());
         buttonRetry.setVisible(true);
 
         labelMines = new JLabel();
@@ -218,7 +197,7 @@ class Game {
         menuBar.add(menuGame);
 
         gameEasy = new JMenuItem("Easy");
-        gameEasy.addActionListener((ActionEvent e) -> {
+        gameEasy.addActionListener(e -> {
             if (Settings.getCurrentLevel() != 1) {
                 restartFrame(1, getWindowLocation());
             } else {
@@ -228,7 +207,7 @@ class Game {
         menuGame.add(gameEasy);
 
         gameIntermediate = new JMenuItem("Intermediate");
-        gameIntermediate.addActionListener((ActionEvent e) -> {
+        gameIntermediate.addActionListener(e -> {
             if (Settings.getCurrentLevel() != 2) {
                 restartFrame(2, getWindowLocation());
             } else {
@@ -238,7 +217,7 @@ class Game {
         menuGame.add(gameIntermediate);
 
         gameExpert = new JMenuItem("Expert");
-        gameExpert.addActionListener((ActionEvent e) -> {
+        gameExpert.addActionListener(e -> {
             if (Settings.getCurrentLevel() != 3) {
                 restartFrame(3, getWindowLocation());
             } else {
@@ -246,11 +225,6 @@ class Game {
             }
         });
         menuGame.add(gameExpert);
-        menuGame.add(new JSeparator(SwingConstants.HORIZONTAL));
-
-        gameTop = new JMenuItem("Top scores");
-        gameTop.addActionListener((ActionEvent e) -> new TopScores(getWindowLocation()));
-        menuGame.add(gameTop);
 
         menuSettings = new JMenu("Settings");
         menuBar.add(menuSettings);
@@ -258,7 +232,7 @@ class Game {
         settingsSaferFirstClick = new JMenuItem();
         setSaferFirstClickText();
 
-        settingsSaferFirstClick.addActionListener((ActionEvent e) -> {
+        settingsSaferFirstClick.addActionListener(e -> {
             Settings.setSaferFirstClick(!Settings.isSaferFirstClick());
             setSaferFirstClickText();
         });
@@ -266,7 +240,7 @@ class Game {
 
         settingsSafeReveal = new JMenuItem();
         setSafeRevealText();
-        settingsSafeReveal.addActionListener((ActionEvent e) -> {
+        settingsSafeReveal.addActionListener(e -> {
             Settings.setSafeReveal(!Settings.isSafeReveal());
             setSafeRevealText();
         });
@@ -280,8 +254,7 @@ class Game {
             Cell.setActive(true);
             if (!won) {
                 cells[redX][redY].getButton().setBackground(backgroundColor);
-            }
-            else {
+            } else {
                 won = false;
             }
         }
@@ -357,7 +330,7 @@ class Game {
         }
     }
 
-    private static ArrayList findNeighbours(int row, int col) {
+    private static ArrayList<Coordinates> findNeighbours(int row, int col) {
         ArrayList<Coordinates> neighbours = new ArrayList<>();
         if ((row > 0 && row < rows - 1) && (col > 0 && col < columns - 1)) {
             neighbours.add(new Coordinates(row - 1, col - 1));

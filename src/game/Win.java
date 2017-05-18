@@ -8,15 +8,13 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 class Win extends JFrame {
     private static int score, level;
     private static Point point;
 
     private static JPanel panel, panel2;
-    private static JLabel labelWin, labelScore, labelScore2, labelSubmit;
-    private static JTextField textName;
+    private static JLabel labelWin, labelScore, labelScore2;
     private static JButton buttonSubmit;
 
     public Win(int score, Point point, int level) {
@@ -47,8 +45,8 @@ class Win extends JFrame {
 
     private void initComponents() {
         setTitle("You win");
-        setSize(300, 400);
-        setPreferredSize(new Dimension(200, 300));
+        setSize(300, 300);
+        setPreferredSize(new Dimension(300, 300));
         setLocation(point);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -70,13 +68,13 @@ class Win extends JFrame {
         panel.add(labelScore);
         panel.add(labelScore2);
 
-        labelSubmit = new JLabel("\nWrite your name and submit:\n");
+        /*labelSubmit = new JLabel("\nWrite your name and submit:\n");
         panel.add(labelSubmit);
 
         textName = new JTextField();
         textName.setSize(100, 20);
         textName.setPreferredSize(new Dimension(160, 20));
-        panel.add(textName);
+        panel.add(textName);*/
 
         buttonSubmit = new JButton("Close");
         buttonSubmit.setPreferredSize(new Dimension(60, 20));
