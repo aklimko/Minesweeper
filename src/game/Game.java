@@ -1,75 +1,24 @@
 package game;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
 class Game {
     private static int rows, columns;
-    private static final int sizeButton = 25;
-    private static int panelWidth, panelMainHeight;
-    private static final int panelInfoHeight = 80;
-    private static int width, height;
     private static int numMines;
     private static boolean firstClicked, won;
-    private static Color backgroundColor;
-    private static Image imgFlag, imgMine, imgMineCrossed;
     private static int redX, redY;
     private static Timer timer;
     private static TimerTask timerTask;
     private static int minesLeft, seconds, clickedCells;
     private static Cell[][] cells;
 
-    private static JFrame frame;
-    private static JPanel panelMain, panelInfo;
-    private static JButton button, buttonRetry;
-    private static JLabel labelMines, labelSeconds;
-    private static JMenuBar menuBar;
-    private static JMenu menuGame, menuSettings;
-    private static JMenuItem gameEasy, gameIntermediate, gameExpert, settingsSaferFirstClick, settingsSafeReveal;
-
-    private Game() {
-        setLevel(Settings.getCurrentLevel());
-        setWindowSize();
-        start();
-        showFrame();
-        Cell.setActive(true);
-    }
-
-    private Game(Point point) {
-        setLevel(Settings.getCurrentLevel());
-        setWindowSize();
-        start();
-        frame.setLocation(point);
-        showFrame();
-        Cell.setActive(true);
-    }
-
-    private static void setLevel(int level) {
+    public static void setLevel(int level) {
         clickedCells = 0;
         switch (level) {
             case 1:
@@ -92,169 +41,11 @@ class Game {
         }
     }
 
-    private static void setWindowSize() {
-        panelWidth = sizeButton * columns;
-        panelMainHeight = sizeButton * rows;
-        width = panelWidth + 50;
-        height = panelInfoHeight + panelMainHeight + 80;
-    }
-
-    private void start() {
-        loadImages();
-        drawFrame();
-        drawPanelMain();
-        drawPanelInfo();
-        drawMenu();
-
-        minesLeft = numMines;
-        firstClicked = false;
-        won = false;
-
-        initTimer();
-        generateCells();
-        Cell.setImages(imgFlag, imgMineCrossed);
-    }
-
-    private void loadImages() {
-        try {
-            imgFlag = ImageIO.read(getClass().getResource("/img/flag.png"));
-            imgMine = ImageIO.read(getClass().getResource("/img/mine.png"));
-            imgMineCrossed = ImageIO.read(getClass().getResource("/img/mine_crossed.png"));
-        } catch (IOException ex) {
-            Logger.getLogger(Cell.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private void drawFrame() {
-        frame = new JFrame();
-        frame.setTitle("Minesweeper");
-        frame.setSize(width, height);
-        frame.setPreferredSize(new Dimension(width, height));
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                Settings.checkIfChanged();
-            }
-        });
-        frame.setResizable(false);
-        frame.setLayout(null);
-    }
-
-    private static void drawPanelMain() {
-        panelMain = new JPanel(new GridLayout(rows, columns, 0, 0));
-        panelMain.setBounds(20, 80, panelWidth, panelMainHeight);
-        panelMain.setBackground(Color.GRAY.brighter());
-        frame.add(panelMain);
-    }
-
-    private static void drawPanelInfo() {
-        panelInfo = new JPanel();
-        panelInfo.setLayout(new GridBagLayout());
-        panelInfo.setBounds(20, 0, panelWidth, panelInfoHeight);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-
-        buttonRetry = new JButton();
-        buttonRetry.setMargin(new Insets(0, 0, 0, 0));
-        buttonRetry.setPreferredSize(new Dimension(40, 40));
-        buttonRetry.setFont(buttonRetry.getFont().deriveFont(12f));
-        backgroundColor = buttonRetry.getBackground();
-        buttonRetry.setText("Retry");
-        buttonRetry.setFocusable(false);
-        buttonRetry.addActionListener(e -> restartGame());
-        buttonRetry.setVisible(true);
-
-        labelMines = new JLabel();
-        labelMines.setPreferredSize(new Dimension(90, 60));
-        labelMines.setText(Integer.toString(numMines));
-        labelMines.setFont(buttonRetry.getFont().deriveFont(28f));
-
-        labelSeconds = new JLabel("0", SwingConstants.RIGHT);
-        labelSeconds.setPreferredSize(new Dimension(90, 60));
-        labelSeconds.setText(Integer.toString(0));
-        labelSeconds.setFont(buttonRetry.getFont().deriveFont(28f));
-
-        int gap = (panelWidth - 230) / 4;
-        gbc.gridx = 0;
-        gbc.insets = new Insets(0, 0, 0, gap);
-        panelInfo.add(labelMines, gbc);
-
-        gbc.gridx = 1;
-        gbc.insets = new Insets(0, gap, 0, gap);
-        panelInfo.add(buttonRetry, gbc);
-
-        gbc.gridx = 2;
-        gbc.insets = new Insets(0, gap, 0, 0);
-        panelInfo.add(labelSeconds, gbc);
-        frame.add(panelInfo);
-    }
-
-    private static void drawMenu() {
-        menuBar = new JMenuBar();
-        menuBar.setSize(width, 20);
-        menuGame = new JMenu("Game");
-        menuBar.add(menuGame);
-
-        gameEasy = new JMenuItem("Easy");
-        gameEasy.addActionListener(e -> {
-            if (Settings.getCurrentLevel() != 1) {
-                restartFrame(1, getWindowLocation());
-            } else {
-                restartGame();
-            }
-        });
-        menuGame.add(gameEasy);
-
-        gameIntermediate = new JMenuItem("Intermediate");
-        gameIntermediate.addActionListener(e -> {
-            if (Settings.getCurrentLevel() != 2) {
-                restartFrame(2, getWindowLocation());
-            } else {
-                restartGame();
-            }
-        });
-        menuGame.add(gameIntermediate);
-
-        gameExpert = new JMenuItem("Expert");
-        gameExpert.addActionListener(e -> {
-            if (Settings.getCurrentLevel() != 3) {
-                restartFrame(3, getWindowLocation());
-            } else {
-                restartGame();
-            }
-        });
-        menuGame.add(gameExpert);
-
-        menuSettings = new JMenu("Settings");
-        menuBar.add(menuSettings);
-
-        settingsSaferFirstClick = new JMenuItem();
-        setSaferFirstClickText();
-
-        settingsSaferFirstClick.addActionListener(e -> {
-            Settings.setSaferFirstClick(!Settings.isSaferFirstClick());
-            setSaferFirstClickText();
-        });
-        menuSettings.add(settingsSaferFirstClick);
-
-        settingsSafeReveal = new JMenuItem();
-        setSafeRevealText();
-        settingsSafeReveal.addActionListener(e -> {
-            Settings.setSafeReveal(!Settings.isSafeReveal());
-            setSafeRevealText();
-        });
-        menuSettings.add(settingsSafeReveal);
-
-        frame.setJMenuBar(menuBar);
-    }
-
-    private static void restartGame() {
+    public static void restartGame() {
         if (!Cell.isActive()) {
             Cell.setActive(true);
             if (!won) {
-                cells[redX][redY].getButton().setBackground(backgroundColor);
+                cells[redX][redY].getButton().setBackground(GameView.getBackgroundColor());
             } else {
                 won = false;
             }
@@ -269,8 +60,8 @@ class Game {
                 cells[i][j].setFlaggedToFalse();
             }
         }
-        labelMines.setText(Integer.toString(numMines));
-        labelSeconds.setText("0");
+        GameView.getLabelMines().setText(Integer.toString(numMines));
+        GameView.getLabelSeconds().setText("0");
         timer.cancel();
         seconds = 0;
         clickedCells = 0;
@@ -278,31 +69,25 @@ class Game {
         firstClicked = false;
     }
 
-    private static void initTimer() {
+    public static void initTimer() {
         seconds = 0;
         timer = new Timer();
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                labelSeconds.setText(Integer.toString(++seconds));
+                GameView.getLabelSeconds().setText(Integer.toString(++seconds));
             }
         };
     }
 
-    private static void generateCells() {
+    public static void generateCells() {
         cells = new Cell[rows][columns];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 cells[i][j] = new Cell();
-                button = cells[i][j].makeCell(i, j);
-                panelMain.add(button);
+                GameView.getPanelMain().add(cells[i][j].makeCell(i, j));
             }
         }
-    }
-
-    private static void showFrame() {
-        frame.pack();
-        frame.setVisible(true);
     }
 
     public static void clickedNeighbours(int row, int col) {
@@ -447,7 +232,7 @@ class Game {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                labelSeconds.setText(Integer.toString(seconds++));
+                GameView.getLabelSeconds().setText(Integer.toString(seconds++));
             }
         }, 0, 1000);
     }
@@ -468,7 +253,7 @@ class Game {
         if (clickedCells == rows * columns - numMines) {
             won = true;
             freezeGame();
-            new Win(Integer.parseInt(labelSeconds.getText()), getWindowLocation(), Settings.getCurrentLevel());
+            new Win(Integer.parseInt(GameView.getLabelSeconds().getText()), GameView.getWindowLocation(), Settings.getCurrentLevel());
         }
     }
 
@@ -488,7 +273,7 @@ class Game {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 if (cells[i][j].isMined() == 1 && !cells[i][j].isFlagged()) {
-                    cells[i][j].getButton().setIcon(new ImageIcon(imgMine));
+                    cells[i][j].getButton().setIcon(new ImageIcon(GameView.getImgMine()));
                 }
             }
         }
@@ -505,39 +290,35 @@ class Game {
     }
 
     public static void plusMine() {
-        labelMines.setText(Integer.toString(++minesLeft));
+        GameView.getLabelMines().setText(Integer.toString(++minesLeft));
     }
 
     public static void minusMine() {
-        labelMines.setText(Integer.toString(--minesLeft));
+        GameView.getLabelMines().setText(Integer.toString(--minesLeft));
     }
 
-    private static void restartFrame(int level, Point point) {
-        frame.removeAll();
-        frame.dispose();
+    public static void restartFrame(int level, Point point) {
+        GameView.getFrame().removeAll();
+        GameView.getFrame().dispose();
         timer.cancel();
         Settings.setCurrentLevel(level);
-        new Game(point);
+        new GameView(point);
     }
 
-    private static void setSaferFirstClickText() {
+    public static void setSaferFirstClickText() {
         if (Settings.isSaferFirstClick()) {
-            settingsSaferFirstClick.setText("\u221ASafer first click");
+            GameView.getSettingsSaferFirstClick().setText("\u221ASafer first click");
         } else {
-            settingsSaferFirstClick.setText("Safer first click");
+            GameView.getSettingsSaferFirstClick().setText("Safer first click");
         }
     }
 
-    private static void setSafeRevealText() {
+    public static void setSafeRevealText() {
         if (Settings.isSafeReveal()) {
-            settingsSafeReveal.setText("\u221ASafe reveal");
+            GameView.getSettingsSafeReveal().setText("\u221ASafe reveal");
         } else {
-            settingsSafeReveal.setText("Safe reveal");
+            GameView.getSettingsSafeReveal().setText("Safe reveal");
         }
-    }
-
-    private static Point getWindowLocation() {
-        return frame.getLocationOnScreen();
     }
 
     public static boolean isFirstClicked() {
@@ -552,12 +333,19 @@ class Game {
         return numMines;
     }
 
-    public static int getSizeButton() {
-        return sizeButton;
+    public static int getRows() {
+        return rows;
     }
 
-    public static void main(String[] args) {
-        Settings.loadFromFile();
-        javax.swing.SwingUtilities.invokeLater(Game::new);
+    public static int getColumns() {
+        return columns;
+    }
+
+    public static void setMinesLeft(int minesLeft) {
+        Game.minesLeft = minesLeft;
+    }
+
+    public static void setWon(boolean won) {
+        Game.won = won;
     }
 }

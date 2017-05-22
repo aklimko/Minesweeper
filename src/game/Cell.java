@@ -27,10 +27,10 @@ class Cell extends Coordinates {
         row = i;
         col = j;
         button = new JButton();
-        button.setMaximumSize(new Dimension(Game.getSizeButton(), Game.getSizeButton()));
+        button.setMaximumSize(new Dimension(GameView.getSizeButton(), GameView.getSizeButton()));
         button.setMargin(new Insets(0, 0, 0, 0));
         button.setFont(button.getFont().deriveFont(24f));
-        button.setPreferredSize(new Dimension(Game.getSizeButton(), Game.getSizeButton()));
+        button.setPreferredSize(new Dimension(GameView.getSizeButton(), GameView.getSizeButton()));
         button.setFocusPainted(false);
         button.setVisible(true);
 
