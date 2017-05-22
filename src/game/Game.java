@@ -8,7 +8,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -266,8 +267,6 @@ class Game {
                 cells[i][j].clearText();
                 cells[i][j].setClickedToFalse();
                 cells[i][j].setFlaggedToFalse();
-                cells[i][j].setValue(0);
-                cells[i][j].setColor(0);
             }
         }
         labelMines.setText(Integer.toString(numMines));
@@ -466,21 +465,19 @@ class Game {
     }
 
     public static void checkWin() {
-        if (!won) {
-            if (clickedCells == rows * columns - numMines) {
-                won = true;
-                freezeGame();
-                new Win(Integer.parseInt(labelSeconds.getText()), getWindowLocation(), Settings.getCurrentLevel());
-            }
+        if (clickedCells == rows * columns - numMines) {
+            won = true;
+            freezeGame();
+            new Win(Integer.parseInt(labelSeconds.getText()), getWindowLocation(), Settings.getCurrentLevel());
         }
     }
 
     public static void freezeGame() {
         timer.cancel();
         Cell.setActive(false);
-    }
+}
 
-    public static void makeRed(int row, int col) {
+    public static void makeBackgroundRed(int row, int col) {
         redX = row;
         redY = col;
         cells[row][col].getButton().setOpaque(true);

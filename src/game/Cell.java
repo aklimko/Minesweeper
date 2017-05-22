@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
@@ -53,37 +52,39 @@ class Cell extends Coordinates {
                 }
             }
         });
+        button.addActionListener(e -> clickLeftMouseButton());
 
-        button.addActionListener(e -> {
-            if (!flagged && active) {
-                button.setContentAreaFilled(false);
-                if (clicked && Settings.isSafeReveal()) {
-                    Game.clickedNeighbours(row, col);
-                } else {
-                    clicked = true;
-                    Game.addClickedCellsCounter();
-                    if (!Game.isFirstClicked()) {
-                        Game.generateMines(Game.getNumMines(), row, col);
-                        Game.setFirstClicked(true);
-                        Game.startTimer();
-                    }
-                    if (!mined) {
-                        if (value != 0) {
-                            button.setText(Integer.toString(value));
-                        } else {
-                            Game.revealNeighbours(row, col);
-                        }
-                        Game.checkWin();
+        return button;
+    }
+
+    private void clickLeftMouseButton(){
+        if (!flagged && active) {
+            button.setContentAreaFilled(false);
+            if (clicked && Settings.isSafeReveal()) {
+                Game.clickedNeighbours(row, col);
+            } else {
+                clicked = true;
+                Game.addClickedCellsCounter();
+                if (!Game.isFirstClicked()) {
+                    Game.generateMines(Game.getNumMines(), row, col);
+                    Game.setFirstClicked(true);
+                    Game.startTimer();
+                }
+                if (!mined) {
+                    if (value != 0) {
+                        button.setText(Integer.toString(value));
                     } else {
-                        Game.freezeGame();
-                        Game.makeRed(row, col);
-                        Game.revealMines();
-                        Game.revealWrongFlagged();
+                        Game.revealNeighbours(row, col);
                     }
+                    Game.checkWin();
+                } else {
+                    Game.freezeGame();
+                    Game.makeBackgroundRed(row, col);
+                    Game.revealMines();
+                    Game.revealWrongFlagged();
                 }
             }
-        });
-        return button;
+        }
     }
 
     public void setColor(int value) {
