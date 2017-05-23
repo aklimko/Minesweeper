@@ -1,14 +1,7 @@
 package game;
 
 import javax.imageio.ImageIO;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -210,6 +203,13 @@ class GameView {
             Game.setSafeRevealText();
         });
         menuSettings.add(settingsSafeReveal);
+
+        JSeparator separator = new JSeparator();
+        menuSettings.add(separator);
+
+        JMenuItem checkForUpdates = new JMenuItem("Check for updates");
+        checkForUpdates.addActionListener(e -> new Thread(Game::clickCheckForUpdates).start());
+        menuSettings.add(checkForUpdates);
 
         frame.setJMenuBar(menuBar);
     }

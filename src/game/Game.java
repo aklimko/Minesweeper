@@ -2,11 +2,12 @@ package game;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.swing.ImageIcon;
+import javax.swing.*;
 
 class Game {
     private static int rows, columns;
@@ -319,6 +320,23 @@ class Game {
         } else {
             GameView.getSettingsSafeReveal().setText("Safe reveal");
         }
+    }
+
+    public static void clickCheckForUpdates(){
+        boolean upToDate;
+        try {
+            upToDate = VersionCheck.checkForNewestVersion();
+        } catch (IOException e1) {
+            JOptionPane.showMessageDialog(GameView.getFrame(), "Unable to check for updates.");
+            return;
+        }
+        String message;
+        if (upToDate) {
+            message = "You are using the latest version: " + VersionCheck.getCurrentVersion();
+        } else {
+            message = "There is a new version released. Visit https://github.com/exusar/Minesweeper/releases/latest to download.";
+        }
+        JOptionPane.showMessageDialog(GameView.getFrame(), message);
     }
 
     public static boolean isFirstClicked() {
