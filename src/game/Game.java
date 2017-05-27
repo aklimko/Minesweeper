@@ -261,7 +261,7 @@ class Game {
     public static void freezeGame() {
         timer.cancel();
         Cell.setActive(false);
-}
+    }
 
     public static void makeBackgroundRed(int row, int col) {
         redX = row;
@@ -322,7 +322,7 @@ class Game {
         }
     }
 
-    public static void clickCheckForUpdates(){
+    public static void clickCheckForUpdates() {
         boolean upToDate;
         try {
             upToDate = VersionCheck.checkForNewestVersion();
@@ -334,7 +334,7 @@ class Game {
         if (upToDate) {
             message = "You are using the latest version: " + VersionCheck.getCurrentVersion();
         } else {
-            message = "There is a new version released. Visit https://github.com/exusar/Minesweeper/releases/latest to download.";
+            message = "There is a new version released.\nVisit github.com/exusar/Minesweeper/releases/latest to download.";
         }
         JOptionPane.showMessageDialog(GameView.getFrame(), message);
     }

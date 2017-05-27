@@ -1,14 +1,32 @@
 package game;
 
-import java.io.*;
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 class Settings {
     private static int currentLevel;
     private static boolean saferFirstClick, safeReveal;
+
+    public static void loadFromFile() {
+        try {
+            String fileData = new String(Files.readAllBytes(Paths.get("settings.json")));
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode settings = objectMapper.readTree(fileData);
+            currentLevel = settings.get("startingLevel").asInt();
+            saferFirstClick = settings.get("saferFirstClick").asBoolean();
+            safeReveal = settings.get("safeReveal").asBoolean();
+        } catch (IOException e) {
+            loadFailed();
+        }
+    }
 
     private static void loadFailed() {
         currentLevel = 1;
@@ -16,45 +34,32 @@ class Settings {
         safeReveal = true;
     }
 
-    public static void loadFromFile() {
-        JSONParser parser = new JSONParser();
-
-        try {
-            JSONObject object = (JSONObject) parser.parse(new FileReader("settings.json"));
-            currentLevel = ((Long) object.get("startingLevel")).intValue();
-            saferFirstClick = (boolean) object.get("saferFirstClick");
-            safeReveal = (boolean) object.get("safeReveal");
-        } catch (IOException | ParseException e) {
-            loadFailed();
-        }
-    }
-
     public static void checkIfChanged() {
-        JSONParser parser = new JSONParser();
-
         try {
-            JSONObject object = (JSONObject) parser.parse(new FileReader("settings.json"));
-            if (currentLevel != ((Long) object.get("startingLevel")).intValue()
-                    || saferFirstClick != (boolean) object.get("saferFirstClick")
-                    || safeReveal != (boolean) object.get("safeReveal")) {
+            String fileData = new String(Files.readAllBytes(Paths.get("settings.json")));
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode settings = objectMapper.readTree(fileData);
+            if (currentLevel != settings.get("startingLevel").asInt()
+                    || saferFirstClick != settings.get("saferFirstClick").asBoolean()
+                    || safeReveal != settings.get("safeReveal").asBoolean()) {
                 save();
             }
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             save();
         }
     }
 
-    @SuppressWarnings("unchecked")
     private static void save() {
-        JSONObject object = new JSONObject();
-        object.put("startingLevel", currentLevel);
-        object.put("saferFirstClick", saferFirstClick);
-        object.put("safeReveal", safeReveal);
-
-        try (FileWriter config = new FileWriter("settings.json")) {
-            config.write(object.toJSONString());
+        JsonFactory factory = new JsonFactory();
+        try {
+            JsonGenerator generator = factory.createGenerator(new File("settings.json"), JsonEncoding.UTF8);
+            generator.writeStartObject();
+            generator.writeNumberField("startingLevel", currentLevel);
+            generator.writeBooleanField("saferFirstClick", saferFirstClick);
+            generator.writeBooleanField("safeReveal", safeReveal);
+            generator.writeEndObject();
+            generator.close();
         } catch (IOException e) {
-            //do nothing
         }
     }
 
