@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 
 class VersionCheck {
-    private static final String currentVersion = "1.1";
+    private static final String currentVersion = "1.0.1";
     private static final String urlString = "https://api.github.com/repos/exusar/Minesweeper/releases/latest";
 
     public static boolean checkForNewestVersion() throws IOException {
