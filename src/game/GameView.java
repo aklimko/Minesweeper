@@ -16,9 +16,9 @@ import java.io.IOException;
 import static game.Level.*;
 
 class GameView {
-    private static final int sizeButton = 25;
+    private static final int SIZE_BUTTON = 25;
+    private static final int PANEL_INFO_HEIGHT = 80;
     private static int panelWidth, panelMainHeight;
-    private static final int panelInfoHeight = 80;
     private static int width, height;
     private static Color backgroundColor;
     private static Image imgFlag, imgMine, imgMineCrossed;
@@ -51,10 +51,10 @@ class GameView {
     }
 
     private static void setWindowSize() {
-        panelWidth = sizeButton * Game.getColumns();
-        panelMainHeight = sizeButton * Game.getRows();
+        panelWidth = SIZE_BUTTON * Game.getColumns();
+        panelMainHeight = SIZE_BUTTON * Game.getRows();
         width = panelWidth + 50;
-        height = panelInfoHeight + panelMainHeight + 80;
+        height = PANEL_INFO_HEIGHT + panelMainHeight + 80;
     }
 
     private void start() {
@@ -109,7 +109,7 @@ class GameView {
     private static void drawPanelInfo() {
         panelInfo = new JPanel();
         panelInfo.setLayout(new GridBagLayout());
-        panelInfo.setBounds(20, 0, panelWidth, panelInfoHeight);
+        panelInfo.setBounds(20, 0, panelWidth, PANEL_INFO_HEIGHT);
 
         GridBagConstraints gbc = new GridBagConstraints();
 
@@ -256,7 +256,7 @@ class GameView {
     }
 
     public static int getSizeButton() {
-        return sizeButton;
+        return SIZE_BUTTON;
     }
 
     public static void main(String[] args) {
