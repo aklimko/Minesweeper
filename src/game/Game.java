@@ -19,20 +19,20 @@ class Game {
     private static int minesLeft, seconds, clickedCells;
     private static Cell[][] cells;
 
-    public static void setLevel(int level) {
+    public static void setLevel(Level level) {
         clickedCells = 0;
         switch (level) {
-            case 1:
+            case EASY:
                 rows = 8;
                 columns = 8;
                 numMines = 10;
                 break;
-            case 2:
+            case INTERMEDIATE:
                 rows = 16;
                 columns = 16;
                 numMines = 40;
                 break;
-            case 3:
+            case EXPERT:
                 rows = 16;
                 columns = 30;
                 numMines = 99;
@@ -185,10 +185,10 @@ class Game {
 
         int generatedMinesCounter = 0;
         while (generatedMinesCounter < numMines) {
-            Coordinates coordinate = convertPositionToCoordinates(random.nextInt(rows * columns));
-            if (!temp.contains(coordinate)) {
-                temp.add(coordinate);
-                cells[coordinate.getRow()][coordinate.getCol()].setMined(true);
+            Coordinates coordinates = convertPositionToCoordinates(random.nextInt(rows * columns));
+            if (!temp.contains(coordinates)) {
+                temp.add(coordinates);
+                cells[coordinates.getRow()][coordinates.getCol()].setMined(true);
                 generatedMinesCounter++;
             }
         }
@@ -217,9 +217,9 @@ class Game {
     }
 
     private static int countNearbyMines(int row, int col) {
-        int count = 0;
         ArrayList<Coordinates> neighbours;
         neighbours = findNeighbours(row, col);
+        int count = 0;
         for (Coordinates neighbour : neighbours) {
             count += cells[neighbour.getRow()][neighbour.getCol()].isMined();
         }
@@ -242,10 +242,8 @@ class Game {
         ArrayList<Coordinates> neighbours;
         neighbours = findNeighbours(row, col);
         for (Coordinates neighbour : neighbours) {
-            int x = neighbour.getRow();
-            int y = neighbour.getCol();
-            if (!cells[x][y].isClicked()) {
-                cells[x][y].getButton().doClick(0);
+            if (!cells[neighbour.getRow()][neighbour.getCol()].isClicked()) {
+                cells[neighbour.getRow()][neighbour.getCol()].getButton().doClick(0);
             }
         }
     }
@@ -298,7 +296,7 @@ class Game {
         GameView.getLabelMines().setText(Integer.toString(--minesLeft));
     }
 
-    public static void restartFrame(int level, Point point) {
+    public static void restartFrame(Level level, Point point) {
         GameView.getFrame().removeAll();
         GameView.getFrame().dispose();
         timer.cancel();

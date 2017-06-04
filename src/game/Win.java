@@ -10,14 +10,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 class Win extends JFrame {
-    private static int score, level;
+    private static Level level;
+    private static int score;
     private static Point point;
 
     private static JPanel panel, panel2;
     private static JLabel labelWin, labelScore, labelScore2;
     private static JButton buttonSubmit;
 
-    public Win(int score, Point point, int level) {
+    public Win(int score, Point point, Level level) {
         Win.score = score;
         Win.point = point;
         Win.level = level;
@@ -31,16 +32,7 @@ class Win extends JFrame {
     }
 
     private String getLevelName() {
-        switch (level) {
-            case 1:
-                return "Easy";
-            case 2:
-                return "Intermediate";
-            case 3:
-                return "Expert";
-            default:
-                return "Unknown";
-        }
+        return level.toString();
     }
 
     private void initComponents() {
@@ -67,14 +59,6 @@ class Win extends JFrame {
         labelScore2.setVisible(true);
         panel.add(labelScore);
         panel.add(labelScore2);
-
-        /*labelSubmit = new JLabel("\nWrite your name and submit:\n");
-        panel.add(labelSubmit);
-
-        textName = new JTextField();
-        textName.setSize(100, 20);
-        textName.setPreferredSize(new Dimension(160, 20));
-        panel.add(textName);*/
 
         buttonSubmit = new JButton("Close");
         buttonSubmit.setPreferredSize(new Dimension(60, 20));

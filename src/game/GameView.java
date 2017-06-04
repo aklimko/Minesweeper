@@ -13,8 +13,7 @@ import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static game.Level.*;
 
 class GameView {
     private static final int sizeButton = 25;
@@ -78,7 +77,6 @@ class GameView {
             imgMine = ImageIO.read(getClass().getResource("/img/mine.png"));
             imgMineCrossed = ImageIO.read(getClass().getResource("/img/mine_crossed.png"));
         } catch (IOException ex) {
-            Logger.getLogger(Cell.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -156,8 +154,8 @@ class GameView {
 
         gameEasy = new JMenuItem("Easy");
         gameEasy.addActionListener(e -> {
-            if (Settings.getCurrentLevel() != 1) {
-                Game.restartFrame(1, getWindowLocation());
+            if (Settings.getCurrentLevel() != EASY) {
+                Game.restartFrame(EASY, getWindowLocation());
             } else {
                 Game.restartGame();
             }
@@ -166,8 +164,8 @@ class GameView {
 
         gameIntermediate = new JMenuItem("Intermediate");
         gameIntermediate.addActionListener(e -> {
-            if (Settings.getCurrentLevel() != 2) {
-                Game.restartFrame(2, getWindowLocation());
+            if (Settings.getCurrentLevel() != INTERMEDIATE) {
+                Game.restartFrame(INTERMEDIATE, getWindowLocation());
             } else {
                 Game.restartGame();
             }
@@ -176,8 +174,8 @@ class GameView {
 
         gameExpert = new JMenuItem("Expert");
         gameExpert.addActionListener(e -> {
-            if (Settings.getCurrentLevel() != 3) {
-                Game.restartFrame(3, getWindowLocation());
+            if (Settings.getCurrentLevel() != EXPERT) {
+                Game.restartFrame(EXPERT, getWindowLocation());
             } else {
                 Game.restartGame();
             }
