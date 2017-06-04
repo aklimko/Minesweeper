@@ -1,6 +1,7 @@
 package game;
 
 import java.awt.Color;
+import static java.awt.Color.*;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Insets;
@@ -17,15 +18,14 @@ class Cell extends Coordinates {
     private boolean mined, clicked, flagged;
     private static boolean active;
 
-    public Cell() {
+    public Cell(int row, int col) {
+        super(row,col);
         mined = false;
         clicked = false;
         flagged = false;
     }
 
-    public JButton makeCell(int i, int j) {
-        row = i;
-        col = j;
+    public JButton makeCell() {
         button = new JButton();
         button.setMaximumSize(new Dimension(GameView.getSizeButton(), GameView.getSizeButton()));
         button.setMargin(new Insets(0, 0, 0, 0));
@@ -61,12 +61,12 @@ class Cell extends Coordinates {
         if (!flagged && active) {
             button.setContentAreaFilled(false);
             if (clicked && Settings.isSafeReveal()) {
-                Game.clickedNeighbours(row, col);
+                Game.clickedNeighbours(super.getRow(), super.getCol());
             } else {
                 clicked = true;
                 Game.addClickedCellsCounter();
                 if (!Game.isFirstClicked()) {
-                    Game.generateMines(Game.getNumMines(), row, col);
+                    Game.generateMines(Game.getNumMines(), super.getRow(), super.getCol());
                     Game.setFirstClicked(true);
                     Game.startTimer();
                 }
@@ -74,12 +74,12 @@ class Cell extends Coordinates {
                     if (value != 0) {
                         button.setText(Integer.toString(value));
                     } else {
-                        Game.revealNeighbours(row, col);
+                        Game.revealNeighbours(super.getRow(), super.getCol());
                     }
                     Game.checkWin();
                 } else {
                     Game.freezeGame();
-                    Game.makeBackgroundRed(row, col);
+                    Game.makeBackgroundRed(super.getRow(), super.getCol());
                     Game.revealMines();
                     Game.revealWrongFlagged();
                 }
@@ -90,35 +90,32 @@ class Cell extends Coordinates {
     public void setColor(int value) {
         Color color;
         switch (value) {
-            case 0:
-                color = Color.BLACK;
-                break;
             case 1:
-                color = Color.BLUE;
+                color = BLUE;
                 break;
             case 2:
-                color = Color.GREEN.darker();
+                color = GREEN.darker();
                 break;
             case 3:
-                color = Color.RED;
+                color = RED;
                 break;
             case 4:
-                color = Color.BLUE.darker();
+                color = BLUE.darker();
                 break;
             case 5:
-                color = Color.RED.darker();
+                color = RED.darker();
                 break;
             case 6:
-                color = Color.CYAN.darker();
+                color = CYAN.darker();
                 break;
             case 7:
-                color = Color.BLACK;
+                color = BLACK;
                 break;
             case 8:
-                color = Color.GRAY;
+                color = GRAY;
                 break;
             default:
-                color = Color.BLACK;
+                color = WHITE;
                 break;
         }
         button.setForeground(color);

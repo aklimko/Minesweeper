@@ -32,6 +32,7 @@ class GameView {
     private static JMenuItem gameEasy, gameIntermediate, gameExpert, settingsSaferFirstClick, settingsSafeReveal;
 
     private GameView() {
+        Game.setClickedCells(0);
         Game.setLevel(Settings.getCurrentLevel());
         setWindowSize();
         start();
@@ -40,6 +41,7 @@ class GameView {
     }
 
     public GameView(Point point) {
+        Game.setClickedCells(0);
         Game.setLevel(Settings.getCurrentLevel());
         setWindowSize();
         start();
@@ -76,7 +78,7 @@ class GameView {
             imgFlag = ImageIO.read(getClass().getResource("/img/flag.png"));
             imgMine = ImageIO.read(getClass().getResource("/img/mine.png"));
             imgMineCrossed = ImageIO.read(getClass().getResource("/img/mine_crossed.png"));
-        } catch (IOException ex) {
+        } catch (IOException e) {
         }
     }
 

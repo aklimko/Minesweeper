@@ -1,6 +1,6 @@
 package game;
 
-public enum Level {
+enum Level {
     EASY(1),
     INTERMEDIATE(2),
     EXPERT(3);

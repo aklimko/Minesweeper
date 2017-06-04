@@ -61,6 +61,7 @@ class Settings {
             generator.writeEndObject();
             generator.close();
         } catch (IOException e) {
+            // Can't do anything
         }
     }
 

@@ -20,7 +20,6 @@ class Game {
     private static Cell[][] cells;
 
     public static void setLevel(Level level) {
-        clickedCells = 0;
         switch (level) {
             case EASY:
                 rows = 8;
@@ -85,8 +84,8 @@ class Game {
         cells = new Cell[rows][columns];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                cells[i][j] = new Cell();
-                GameView.getPanelMain().add(cells[i][j].makeCell(i, j));
+                cells[i][j] = new Cell(i,j);
+                GameView.getPanelMain().add(cells[i][j].makeCell());
             }
         }
     }
@@ -363,5 +362,9 @@ class Game {
 
     public static void setWon(boolean won) {
         Game.won = won;
+    }
+
+    public static void setClickedCells(int clickedCells) {
+        Game.clickedCells = clickedCells;
     }
 }
