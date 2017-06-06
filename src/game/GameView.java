@@ -162,7 +162,7 @@ class GameView {
                     gamePause.setText("Resume");
                     panelMain.setVisible(false);
                 } else {
-                    Game.resumeTimer();
+                    Game.startTimer();
                     gamePause.setText("Pause");
                     panelMain.setVisible(true);
                 }

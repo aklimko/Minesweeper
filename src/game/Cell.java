@@ -69,7 +69,7 @@ class Cell extends Coordinates {
                 if (!Game.isFirstClicked()) {
                     Game.generateMines(Game.getNumMines(), super.getRow(), super.getCol());
                     Game.setFirstClicked(true);
-                    Game.startTimer();
+                    Game.startTimerOnFirstClick();
                 }
                 if (!mined) {
                     if (value != 0) {

@@ -46,7 +46,7 @@ class Game {
         timer.purge();
     }
 
-    public static void resumeTimer() {
+    public static void startTimer() {
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -87,7 +87,7 @@ class Game {
         checkPauseRestart();
     }
 
-    private static void checkPauseRestart(){
+    private static void checkPauseRestart() {
         if (paused) {
             paused = false;
             GameView.getGamePause().setText("Pause");
@@ -240,15 +240,9 @@ class Game {
         return count;
     }
 
-    public static void startTimer() {
+    public static void startTimerOnFirstClick() {
         seconds = 0;
-        timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                GameView.getLabelSeconds().setText(Integer.toString(seconds++));
-            }
-        }, 0, 1000);
+        startTimer();
     }
 
     public static void revealNeighbours(int row, int col) {
@@ -312,7 +306,9 @@ class Game {
     public static void restartFrame(Level level, Point point) {
         GameView.getFrame().removeAll();
         GameView.getFrame().dispose();
-        stopTimer();
+        if (timer != null) {
+            stopTimer();
+        }
         Settings.setCurrentLevel(level);
         checkPauseRestart();
         new GameView(point);
