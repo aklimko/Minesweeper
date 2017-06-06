@@ -84,7 +84,7 @@ class Game {
         cells = new Cell[rows][columns];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                cells[i][j] = new Cell(i,j);
+                cells[i][j] = new Cell(i, j);
                 GameView.getPanelMain().add(cells[i][j].makeCell());
             }
         }

@@ -1,7 +1,5 @@
 package game;
 
-import java.awt.Color;
-import static java.awt.Color.*;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Insets;
@@ -9,6 +7,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import java.awt.Color;
+
+import static java.awt.Color.*;
 
 class Cell extends Coordinates {
     private JButton button;
@@ -19,7 +20,7 @@ class Cell extends Coordinates {
     private static boolean active;
 
     public Cell(int row, int col) {
-        super(row,col);
+        super(row, col);
         mined = false;
         clicked = false;
         flagged = false;
@@ -57,7 +58,7 @@ class Cell extends Coordinates {
         return button;
     }
 
-    private void clickLeftMouseButton(){
+    private void clickLeftMouseButton() {
         if (!flagged && active) {
             button.setContentAreaFilled(false);
             if (clicked && Settings.isSafeReveal()) {
