@@ -386,4 +386,8 @@ class Game {
     public static void setPaused(boolean paused) {
         Game.paused = paused;
     }
+
+    public static boolean isWon() {
+        return won;
+    }
 }

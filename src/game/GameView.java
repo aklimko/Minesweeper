@@ -156,7 +156,7 @@ class GameView {
 
         gamePause = new JMenuItem("Pause");
         gamePause.addActionListener(e -> {
-            if (Game.isFirstClicked()) {
+            if (Game.isFirstClicked() && Cell.isActive()) {
                 if (!Game.isPaused()) {
                     Game.stopTimer();
                     gamePause.setText("Resume");
