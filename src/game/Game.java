@@ -15,8 +15,8 @@ class Game {
     private static boolean firstClicked, won;
     private static int redX, redY;
     private static Timer timer;
-    private static TimerTask timerTask;
     private static int minesLeft, seconds, clickedCells;
+    private static boolean paused = false;
     private static Cell[][] cells;
 
     public static void setLevel(Level level) {
@@ -41,6 +41,21 @@ class Game {
         }
     }
 
+    public static void stopTimer() {
+        timer.cancel();
+        timer.purge();
+    }
+
+    public static void resumeTimer() {
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                GameView.getLabelSeconds().setText(Integer.toString(seconds++));
+            }
+        }, 0, 1000);
+    }
+
     public static void restartGame() {
         if (!Cell.isActive()) {
             Cell.setActive(true);
@@ -62,22 +77,22 @@ class Game {
         }
         GameView.getLabelMines().setText(Integer.toString(numMines));
         GameView.getLabelSeconds().setText("0");
-        timer.cancel();
-        seconds = 0;
-        clickedCells = 0;
-        minesLeft = numMines;
-        firstClicked = false;
+        if (firstClicked) {
+            stopTimer();
+            seconds = 0;
+            clickedCells = 0;
+            minesLeft = numMines;
+            firstClicked = false;
+        }
+        checkPauseRestart();
     }
 
-    public static void initTimer() {
-        seconds = 0;
-        timer = new Timer();
-        timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                GameView.getLabelSeconds().setText(Integer.toString(++seconds));
-            }
-        };
+    private static void checkPauseRestart(){
+        if (paused) {
+            paused = false;
+            GameView.getGamePause().setText("Pause");
+            GameView.getPanelMain().setVisible(true);
+        }
     }
 
     public static void generateCells() {
@@ -228,7 +243,6 @@ class Game {
     public static void startTimer() {
         seconds = 0;
         timer = new Timer();
-        timerTask.cancel();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -248,7 +262,7 @@ class Game {
     }
 
     public static void checkWin() {
-        if (clickedCells == rows * columns - numMines) {
+        if (clickedCells == rows * columns - numMines && !won) {
             won = true;
             freezeGame();
             new Win(Integer.parseInt(GameView.getLabelSeconds().getText()), GameView.getWindowLocation(), Settings.getCurrentLevel());
@@ -256,7 +270,7 @@ class Game {
     }
 
     public static void freezeGame() {
-        timer.cancel();
+        stopTimer();
         Cell.setActive(false);
     }
 
@@ -298,8 +312,9 @@ class Game {
     public static void restartFrame(Level level, Point point) {
         GameView.getFrame().removeAll();
         GameView.getFrame().dispose();
-        timer.cancel();
+        stopTimer();
         Settings.setCurrentLevel(level);
+        checkPauseRestart();
         new GameView(point);
     }
 
@@ -366,5 +381,13 @@ class Game {
 
     public static void setClickedCells(int clickedCells) {
         Game.clickedCells = clickedCells;
+    }
+
+    public static boolean isPaused() {
+        return paused;
+    }
+
+    public static void setPaused(boolean paused) {
+        Game.paused = paused;
     }
 }

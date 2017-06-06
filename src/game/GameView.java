@@ -30,7 +30,7 @@ class GameView {
     private static JLabel labelMines, labelSeconds;
     private static JMenuBar menuBar;
     private static JMenu menuGame, menuSettings;
-    private static JMenuItem gameEasy, gameIntermediate, gameExpert, settingsSaferFirstClick, settingsSafeReveal;
+    private static JMenuItem gamePause, gameEasy, gameIntermediate, gameExpert, settingsSaferFirstClick, settingsSafeReveal;
 
     private GameView() {
         Game.setClickedCells(0);
@@ -69,7 +69,6 @@ class GameView {
         Game.setFirstClicked(false);
         Game.setWon(false);
 
-        Game.initTimer();
         Game.generateCells();
         Cell.setImages(imgFlag, imgMineCrossed);
     }
@@ -155,6 +154,25 @@ class GameView {
         menuGame = new JMenu("Game");
         menuBar.add(menuGame);
 
+        gamePause = new JMenuItem("Pause");
+        gamePause.addActionListener(e -> {
+            if (Game.isFirstClicked()) {
+                if (!Game.isPaused()) {
+                    Game.stopTimer();
+                    gamePause.setText("Resume");
+                    panelMain.setVisible(false);
+                } else {
+                    Game.resumeTimer();
+                    gamePause.setText("Pause");
+                    panelMain.setVisible(true);
+                }
+                Game.setPaused(!Game.isPaused());
+            }
+        });
+        menuGame.add(gamePause);
+
+        menuGame.add(new JSeparator());
+
         gameEasy = new JMenuItem("Easy");
         gameEasy.addActionListener(e -> {
             if (Settings.getCurrentLevel() != EASY) {
@@ -205,8 +223,7 @@ class GameView {
         });
         menuSettings.add(settingsSafeReveal);
 
-        JSeparator separator = new JSeparator();
-        menuSettings.add(separator);
+        menuSettings.add(new JSeparator());
 
         JMenuItem checkForUpdates = new JMenuItem("Check for updates");
         checkForUpdates.addActionListener(e -> new Thread(Game::clickCheckForUpdates).start());
@@ -258,6 +275,10 @@ class GameView {
 
     public static int getSizeButton() {
         return SIZE_BUTTON;
+    }
+
+    public static JMenuItem getGamePause() {
+        return gamePause;
     }
 
     public static void main(String[] args) {

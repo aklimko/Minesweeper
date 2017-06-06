@@ -16,7 +16,7 @@ class Win extends JFrame {
 
     private static JPanel panel, panel2;
     private static JLabel labelWin, labelScore, labelScore2;
-    private static JButton buttonSubmit;
+    private static JButton buttonClose;
 
     public Win(int score, Point point, Level level) {
         Win.score = score;
@@ -27,8 +27,8 @@ class Win extends JFrame {
     }
 
     private void movePoint() {
-        point.x = point.x + 20;
-        point.y = point.y + 20;
+        point.x += 20;
+        point.y += 20;
     }
 
     private String getLevelName() {
@@ -60,14 +60,14 @@ class Win extends JFrame {
         panel.add(labelScore);
         panel.add(labelScore2);
 
-        buttonSubmit = new JButton("Close");
-        buttonSubmit.setPreferredSize(new Dimension(60, 20));
-        buttonSubmit.setMargin(new Insets(0, 0, 0, 0));
-        buttonSubmit.addActionListener((ActionEvent e) -> dispose());
+        buttonClose = new JButton("Close");
+        buttonClose.setPreferredSize(new Dimension(60, 20));
+        buttonClose.setMargin(new Insets(0, 0, 0, 0));
+        buttonClose.addActionListener((ActionEvent e) -> dispose());
 
         panel2 = new JPanel();
         panel2.setBounds(20, 150, 255, 60);
-        panel2.add(buttonSubmit);
+        panel2.add(buttonClose);
         add(panel2);
 
         setVisible(true);
