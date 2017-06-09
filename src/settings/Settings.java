@@ -1,10 +1,11 @@
-package game;
+package settings;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import game.Level;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.nio.file.Paths;
 
 import static game.Level.*;
 
-class Settings {
+public class Settings {
     private static Level currentLevel;
     private static boolean saferFirstClick, safeReveal;
 

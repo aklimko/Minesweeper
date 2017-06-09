@@ -1,5 +1,7 @@
 package game;
 
+import settings.Settings;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.Color;

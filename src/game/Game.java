@@ -1,5 +1,8 @@
 package game;
 
+import settings.Settings;
+import settings.VersionCheck;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.io.IOException;
@@ -385,9 +388,5 @@ class Game {
 
     public static void setPaused(boolean paused) {
         Game.paused = paused;
-    }
-
-    public static boolean isWon() {
-        return won;
     }
 }

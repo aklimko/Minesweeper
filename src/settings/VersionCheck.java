@@ -1,4 +1,4 @@
-package game;
+package settings;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.net.URL;
 
-class VersionCheck {
+public class VersionCheck {
     private static final String currentVersion = "1.0.1";
     private static final String urlString = "https://api.github.com/repos/exusar/Minesweeper/releases/latest";
 
