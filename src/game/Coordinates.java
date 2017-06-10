@@ -1,8 +1,8 @@
 package game;
 
 class Coordinates {
-    private int row;
-    private int col;
+    private final int row;
+    private final int col;
 
     public Coordinates(int row, int col) {
         this.row = row;

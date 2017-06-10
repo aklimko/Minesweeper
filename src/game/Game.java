@@ -211,7 +211,7 @@ class Game {
 
     private static Coordinates convertPositionToCoordinates(int position) {
         int row = position / columns;
-        while (position >= columns) {
+        if (position >= columns) {
             position %= columns;
         }
         int col = position;
@@ -385,9 +385,5 @@ class Game {
 
     public static void setPaused(boolean paused) {
         Game.paused = paused;
-    }
-
-    public static boolean isWon() {
-        return won;
     }
 }
