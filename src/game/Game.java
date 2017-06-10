@@ -211,10 +211,7 @@ class Game {
 
     private static Coordinates convertPositionToCoordinates(int position) {
         int row = position / columns;
-        if (position >= columns) {
-            position %= columns;
-        }
-        int col = position;
+        int col = position % columns;
         return new Coordinates(row, col);
     }
 
