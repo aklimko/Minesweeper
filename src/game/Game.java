@@ -109,7 +109,7 @@ class Game {
         int value = cells[row][col].getValue();
         int numFlagged = 0;
 
-        ArrayList<Coordinates> neighbours = findNeighbours(row, col);
+        ArrayList<Coordinates> neighbours = cells[row][col].getNeighbours();
 
         for (Coordinates neighbour : neighbours) {
             int x = neighbour.getRow();
@@ -129,79 +129,25 @@ class Game {
         }
     }
 
-    private static ArrayList<Coordinates> findNeighbours(int row, int col) {
-        ArrayList<Coordinates> neighbours = new ArrayList<>();
-        if ((row > 0 && row < rows - 1) && (col > 0 && col < columns - 1)) {
-            neighbours.add(new Coordinates(row - 1, col - 1));
-            neighbours.add(new Coordinates(row, col - 1));
-            neighbours.add(new Coordinates(row + 1, col - 1));
-            neighbours.add(new Coordinates(row - 1, col + 1));
-            neighbours.add(new Coordinates(row, col + 1));
-            neighbours.add(new Coordinates(row + 1, col + 1));
-            neighbours.add(new Coordinates(row - 1, col));
-            neighbours.add(new Coordinates(row + 1, col));
-        } else if (row == 0 && col == 0) {
-            neighbours.add(new Coordinates(0, 1));
-            neighbours.add(new Coordinates(1, 0));
-            neighbours.add(new Coordinates(1, 1));
-        } else if (row == 0 && col == columns - 1) {
-            neighbours.add(new Coordinates(0, col - 1));
-            neighbours.add(new Coordinates(1, col - 1));
-            neighbours.add(new Coordinates(1, col));
-        } else if (row == rows - 1 && col == columns - 1) {
-            neighbours.add(new Coordinates(row, col - 1));
-            neighbours.add(new Coordinates(row - 1, col - 1));
-            neighbours.add(new Coordinates(row - 1, col));
-        } else if (row == rows - 1 && col == 0) {
-            neighbours.add(new Coordinates(row, 1));
-            neighbours.add(new Coordinates(row - 1, 1));
-            neighbours.add(new Coordinates(row - 1, 0));
-        } else if (row == 0) {
-            neighbours.add(new Coordinates(row, col - 1));
-            neighbours.add(new Coordinates(row, col + 1));
-            neighbours.add(new Coordinates(row + 1, col - 1));
-            neighbours.add(new Coordinates(row + 1, col));
-            neighbours.add(new Coordinates(row + 1, col + 1));
-        } else if (row == rows - 1) {
-            neighbours.add(new Coordinates(row, col - 1));
-            neighbours.add(new Coordinates(row, col + 1));
-            neighbours.add(new Coordinates(row - 1, col - 1));
-            neighbours.add(new Coordinates(row - 1, col));
-            neighbours.add(new Coordinates(row - 1, col + 1));
-        } else if (col == 0) {
-            neighbours.add(new Coordinates(row - 1, col));
-            neighbours.add(new Coordinates(row + 1, col));
-            neighbours.add(new Coordinates(row - 1, col + 1));
-            neighbours.add(new Coordinates(row, col + 1));
-            neighbours.add(new Coordinates(row + 1, col + 1));
-        } else if (col == columns - 1) {
-            neighbours.add(new Coordinates(row - 1, col));
-            neighbours.add(new Coordinates(row + 1, col));
-            neighbours.add(new Coordinates(row - 1, col - 1));
-            neighbours.add(new Coordinates(row, col - 1));
-            neighbours.add(new Coordinates(row + 1, col - 1));
-        }
-        return neighbours;
-    }
-
     public static void addClickedCellsCounter() {
         clickedCells++;
     }
 
+    @SuppressWarnings("unchecked")
     public static void generateMines(int numMines, int row, int col) {
         Random random = new Random();
-        ArrayList<Coordinates> temp = new ArrayList<>();
+        ArrayList<Coordinates> occupiedCoordinates = new ArrayList<>();
 
         if (Settings.isSaferFirstClick()) {
-            temp = findNeighbours(row, col);
+            occupiedCoordinates = (ArrayList<Coordinates>) cells[row][col].getNeighbours().clone();
         }
-        temp.add(new Coordinates(row, col));
+        occupiedCoordinates.add(new Coordinates(row, col));
 
         int generatedMinesCounter = 0;
         while (generatedMinesCounter < numMines) {
             Coordinates coordinates = convertPositionToCoordinates(random.nextInt(rows * columns));
-            if (!temp.contains(coordinates)) {
-                temp.add(coordinates);
+            if (!occupiedCoordinates.contains(coordinates)) {
+                occupiedCoordinates.add(coordinates);
                 cells[coordinates.getRow()][coordinates.getCol()].setMined(true);
                 generatedMinesCounter++;
             }
@@ -229,7 +175,7 @@ class Game {
 
     private static int countNearbyMines(int row, int col) {
         ArrayList<Coordinates> neighbours;
-        neighbours = findNeighbours(row, col);
+        neighbours = cells[row][col].getNeighbours();
         int count = 0;
         for (Coordinates neighbour : neighbours) {
             count += cells[neighbour.getRow()][neighbour.getCol()].isMined();
@@ -244,7 +190,7 @@ class Game {
 
     public static void revealNeighbours(int row, int col) {
         ArrayList<Coordinates> neighbours;
-        neighbours = findNeighbours(row, col);
+        neighbours = cells[row][col].getNeighbours();
         for (Coordinates neighbour : neighbours) {
             if (!cells[neighbour.getRow()][neighbour.getCol()].isClicked()) {
                 cells[neighbour.getRow()][neighbour.getCol()].getButton().doClick(0);

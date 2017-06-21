@@ -8,15 +8,17 @@ import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.Color;
+import java.util.ArrayList;
 
 import static java.awt.Color.*;
 
 class Cell extends Coordinates {
-    private JButton button;
     private int value;
-    private static Image imgFlag, imgMineCrossed;
-
     private boolean mined, clicked, flagged;
+    private JButton button;
+    private ArrayList<Coordinates> neighbours;
+
+    private static Image imgFlag, imgMineCrossed;
     private static boolean active;
 
     public Cell(int row, int col) {
@@ -24,6 +26,67 @@ class Cell extends Coordinates {
         mined = false;
         clicked = false;
         flagged = false;
+        neighbours = findNeighbours();
+    }
+
+    private ArrayList<Coordinates> findNeighbours() {
+        int row = super.getRow();
+        int col = super.getCol();
+        int rows = Game.getRows();
+        int columns = Game.getColumns();
+
+        ArrayList<Coordinates> neighbours = new ArrayList<>();
+        if ((row > 0 && row < rows - 1) && (col > 0 && col < columns - 1)) {
+            neighbours.add(new Coordinates(row - 1, col - 1));
+            neighbours.add(new Coordinates(row, col - 1));
+            neighbours.add(new Coordinates(row + 1, col - 1));
+            neighbours.add(new Coordinates(row - 1, col + 1));
+            neighbours.add(new Coordinates(row, col + 1));
+            neighbours.add(new Coordinates(row + 1, col + 1));
+            neighbours.add(new Coordinates(row - 1, col));
+            neighbours.add(new Coordinates(row + 1, col));
+        } else if (row == 0 && col == 0) {
+            neighbours.add(new Coordinates(0, 1));
+            neighbours.add(new Coordinates(1, 0));
+            neighbours.add(new Coordinates(1, 1));
+        } else if (row == 0 && col == columns - 1) {
+            neighbours.add(new Coordinates(0, col - 1));
+            neighbours.add(new Coordinates(1, col - 1));
+            neighbours.add(new Coordinates(1, col));
+        } else if (row == rows - 1 && col == columns - 1) {
+            neighbours.add(new Coordinates(row, col - 1));
+            neighbours.add(new Coordinates(row - 1, col - 1));
+            neighbours.add(new Coordinates(row - 1, col));
+        } else if (row == rows - 1 && col == 0) {
+            neighbours.add(new Coordinates(row, 1));
+            neighbours.add(new Coordinates(row - 1, 1));
+            neighbours.add(new Coordinates(row - 1, 0));
+        } else if (row == 0) {
+            neighbours.add(new Coordinates(row, col - 1));
+            neighbours.add(new Coordinates(row, col + 1));
+            neighbours.add(new Coordinates(row + 1, col - 1));
+            neighbours.add(new Coordinates(row + 1, col));
+            neighbours.add(new Coordinates(row + 1, col + 1));
+        } else if (row == rows - 1) {
+            neighbours.add(new Coordinates(row, col - 1));
+            neighbours.add(new Coordinates(row, col + 1));
+            neighbours.add(new Coordinates(row - 1, col - 1));
+            neighbours.add(new Coordinates(row - 1, col));
+            neighbours.add(new Coordinates(row - 1, col + 1));
+        } else if (col == 0) {
+            neighbours.add(new Coordinates(row - 1, col));
+            neighbours.add(new Coordinates(row + 1, col));
+            neighbours.add(new Coordinates(row - 1, col + 1));
+            neighbours.add(new Coordinates(row, col + 1));
+            neighbours.add(new Coordinates(row + 1, col + 1));
+        } else if (col == columns - 1) {
+            neighbours.add(new Coordinates(row - 1, col));
+            neighbours.add(new Coordinates(row + 1, col));
+            neighbours.add(new Coordinates(row - 1, col - 1));
+            neighbours.add(new Coordinates(row, col - 1));
+            neighbours.add(new Coordinates(row + 1, col - 1));
+        }
+        return neighbours;
     }
 
     public JButton makeCell() {
@@ -177,5 +240,9 @@ class Cell extends Coordinates {
 
     public static boolean isActive() {
         return active;
+    }
+
+    public ArrayList<Coordinates> getNeighbours() {
+        return neighbours;
     }
 }
