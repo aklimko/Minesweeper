@@ -26,16 +26,15 @@ class Cell extends Coordinates {
         mined = false;
         clicked = false;
         flagged = false;
-        neighbours = findNeighbours();
+        findNeighbours();
     }
 
-    private ArrayList<Coordinates> findNeighbours() {
+    private void findNeighbours() {
         int row = super.getRow();
         int col = super.getCol();
         int rows = Game.getRows();
         int columns = Game.getColumns();
-
-        ArrayList<Coordinates> neighbours = new ArrayList<>();
+        neighbours = new ArrayList<>();
         if ((row > 0 && row < rows - 1) && (col > 0 && col < columns - 1)) {
             neighbours.add(new Coordinates(row - 1, col - 1));
             neighbours.add(new Coordinates(row, col - 1));
@@ -86,7 +85,6 @@ class Cell extends Coordinates {
             neighbours.add(new Coordinates(row, col - 1));
             neighbours.add(new Coordinates(row + 1, col - 1));
         }
-        return neighbours;
     }
 
     public JButton makeCell() {
@@ -97,7 +95,6 @@ class Cell extends Coordinates {
         button.setPreferredSize(new Dimension(GameView.getSizeButton(), GameView.getSizeButton()));
         button.setFocusPainted(false);
         button.setVisible(true);
-
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -117,7 +114,6 @@ class Cell extends Coordinates {
             }
         });
         button.addActionListener(e -> clickLeftMouseButton());
-
         return button;
     }
 

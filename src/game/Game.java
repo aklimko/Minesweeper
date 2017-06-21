@@ -110,7 +110,6 @@ class Game {
         int numFlagged = 0;
 
         ArrayList<Coordinates> neighbours = cells[row][col].getNeighbours();
-
         for (Coordinates neighbour : neighbours) {
             int x = neighbour.getRow();
             int y = neighbour.getCol();
@@ -133,13 +132,11 @@ class Game {
         clickedCells++;
     }
 
-    @SuppressWarnings("unchecked")
     public static void generateMines(int numMines, int row, int col) {
         Random random = new Random();
         ArrayList<Coordinates> occupiedCoordinates = new ArrayList<>();
-
         if (Settings.isSaferFirstClick()) {
-            occupiedCoordinates = (ArrayList<Coordinates>) cells[row][col].getNeighbours().clone();
+            occupiedCoordinates.addAll(cells[row][col].getNeighbours());
         }
         occupiedCoordinates.add(new Coordinates(row, col));
 
