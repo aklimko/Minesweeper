@@ -18,42 +18,39 @@ import static game.Level.*;
 
 class GameView {
     private static final int SIZE_BUTTON = 25;
-    private static final int PANEL_INFO_HEIGHT = 80;
-    private static int panelWidth, panelMainHeight;
-    private static int width, height;
-    private static Color backgroundColor;
-    private static Image imgFlag, imgMine, imgMineCrossed;
+    private final int PANEL_INFO_HEIGHT = 80;
+    private int panelWidth, panelMainHeight;
+    private int width, height;
+    private Color backgroundColor;
+    private Image imgFlag, imgMine, imgMineCrossed;
+    private final Game game;
 
-    private static JFrame frame;
-    private static JPanel panelMain, panelInfo;
-    private static JButton buttonRetry;
-    private static JLabel labelMines, labelSeconds;
-    private static JMenuBar menuBar;
-    private static JMenu menuGame, menuSettings;
-    private static JMenuItem gamePause, gameEasy, gameIntermediate, gameExpert, settingsSaferFirstClick, settingsSafeReveal;
+    private JFrame frame;
+    private JPanel panelMain, panelInfo;
+    private JButton buttonRetry;
+    private JLabel labelMines, labelSeconds;
+    private JMenuBar menuBar;
+    private JMenu menuGame, menuSettings;
+    private JMenuItem gamePause, gameEasy, gameIntermediate, gameExpert, settingsSaferFirstClick, settingsSafeReveal;
 
     private GameView() {
-        Game.setClickedCells(0);
-        Game.setLevel(Settings.getCurrentLevel());
+        game = new Game(this);
         setWindowSize();
         start();
         showFrame();
-        Cell.setActive(true);
     }
 
-    public GameView(Point point) {
-        Game.setClickedCells(0);
-        Game.setLevel(Settings.getCurrentLevel());
+    GameView(Point point) {
+        game = new Game(this);
         setWindowSize();
         start();
         frame.setLocation(point);
         showFrame();
-        Cell.setActive(true);
     }
 
-    private static void setWindowSize() {
-        panelWidth = SIZE_BUTTON * Game.getColumns();
-        panelMainHeight = SIZE_BUTTON * Game.getRows();
+    private void setWindowSize() {
+        panelWidth = SIZE_BUTTON * game.getColumns();
+        panelMainHeight = SIZE_BUTTON * game.getRows();
         width = panelWidth + 50;
         height = PANEL_INFO_HEIGHT + panelMainHeight + 80;
     }
@@ -65,11 +62,10 @@ class GameView {
         drawPanelInfo();
         drawMenu();
 
-        Game.setMinesLeft(Game.getNumMines());
-        Game.setFirstClicked(false);
-        Game.setWon(false);
-
-        Game.generateCells();
+        game.setMinesLeft(game.getNumMines());
+        game.setFirstClicked(false);
+        game.setWon(false);
+        game.generateCells();
         Cell.setImages(imgFlag, imgMineCrossed);
     }
 
@@ -79,6 +75,8 @@ class GameView {
             imgMine = ImageIO.read(getClass().getResource("/img/mine.png"));
             imgMineCrossed = ImageIO.read(getClass().getResource("/img/mine_crossed.png"));
         } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Cannot load images.");
+            System.exit(0);
         }
     }
 
@@ -99,14 +97,14 @@ class GameView {
         frame.setLayout(null);
     }
 
-    private static void drawPanelMain() {
-        panelMain = new JPanel(new GridLayout(Game.getRows(), Game.getColumns(), 0, 0));
+    private void drawPanelMain() {
+        panelMain = new JPanel(new GridLayout(game.getRows(), game.getColumns(), 0, 0));
         panelMain.setBounds(20, 80, panelWidth, panelMainHeight);
         panelMain.setBackground(Color.GRAY.brighter());
         frame.add(panelMain);
     }
 
-    private static void drawPanelInfo() {
+    private void drawPanelInfo() {
         panelInfo = new JPanel();
         panelInfo.setLayout(new GridBagLayout());
         panelInfo.setBounds(20, 0, panelWidth, PANEL_INFO_HEIGHT);
@@ -120,12 +118,12 @@ class GameView {
         backgroundColor = buttonRetry.getBackground();
         buttonRetry.setText("Retry");
         buttonRetry.setFocusable(false);
-        buttonRetry.addActionListener(e -> Game.restartGame());
+        buttonRetry.addActionListener(e -> game.restartGame());
         buttonRetry.setVisible(true);
 
         labelMines = new JLabel();
         labelMines.setPreferredSize(new Dimension(90, 60));
-        labelMines.setText(Integer.toString(Game.getNumMines()));
+        labelMines.setText(Integer.toString(game.getNumMines()));
         labelMines.setFont(buttonRetry.getFont().deriveFont(28f));
 
         labelSeconds = new JLabel("0", SwingConstants.RIGHT);
@@ -148,7 +146,7 @@ class GameView {
         frame.add(panelInfo);
     }
 
-    private static void drawMenu() {
+    private void drawMenu() {
         menuBar = new JMenuBar();
         menuBar.setSize(width, 20);
         menuGame = new JMenu("Game");
@@ -156,17 +154,17 @@ class GameView {
 
         gamePause = new JMenuItem("Pause");
         gamePause.addActionListener(e -> {
-            if (Game.isFirstClicked() && Cell.isActive()) {
-                if (!Game.isPaused()) {
-                    Game.stopTimer();
+            if (game.isFirstClicked() && game.isActive()) {
+                if (!game.isPaused()) {
+                    game.stopTimer();
                     gamePause.setText("Resume");
                     panelMain.setVisible(false);
                 } else {
-                    Game.startTimer();
+                    game.startTimer();
                     gamePause.setText("Pause");
                     panelMain.setVisible(true);
                 }
-                Game.setPaused(!Game.isPaused());
+                game.setPaused(!game.isPaused());
             }
         });
         menuGame.add(gamePause);
@@ -176,9 +174,9 @@ class GameView {
         gameEasy = new JMenuItem("Easy");
         gameEasy.addActionListener(e -> {
             if (Settings.getCurrentLevel() != EASY) {
-                Game.restartFrame(EASY, getWindowLocation());
+                game.restartFrame(EASY, getWindowLocation());
             } else {
-                Game.restartGame();
+                game.restartGame();
             }
         });
         menuGame.add(gameEasy);
@@ -186,9 +184,9 @@ class GameView {
         gameIntermediate = new JMenuItem("Intermediate");
         gameIntermediate.addActionListener(e -> {
             if (Settings.getCurrentLevel() != INTERMEDIATE) {
-                Game.restartFrame(INTERMEDIATE, getWindowLocation());
+                game.restartFrame(INTERMEDIATE, getWindowLocation());
             } else {
-                Game.restartGame();
+                game.restartGame();
             }
         });
         menuGame.add(gameIntermediate);
@@ -196,9 +194,9 @@ class GameView {
         gameExpert = new JMenuItem("Expert");
         gameExpert.addActionListener(e -> {
             if (Settings.getCurrentLevel() != EXPERT) {
-                Game.restartFrame(EXPERT, getWindowLocation());
+                game.restartFrame(EXPERT, getWindowLocation());
             } else {
-                Game.restartGame();
+                game.restartGame();
             }
         });
         menuGame.add(gameExpert);
@@ -207,77 +205,77 @@ class GameView {
         menuBar.add(menuSettings);
 
         settingsSaferFirstClick = new JMenuItem();
-        Game.setSaferFirstClickText();
+        game.setSaferFirstClickText();
 
         settingsSaferFirstClick.addActionListener(e -> {
             Settings.setSaferFirstClick(!Settings.isSaferFirstClick());
-            Game.setSaferFirstClickText();
+            game.setSaferFirstClickText();
         });
         menuSettings.add(settingsSaferFirstClick);
 
         settingsSafeReveal = new JMenuItem();
-        Game.setSafeRevealText();
+        game.setSafeRevealText();
         settingsSafeReveal.addActionListener(e -> {
             Settings.setSafeReveal(!Settings.isSafeReveal());
-            Game.setSafeRevealText();
+            game.setSafeRevealText();
         });
         menuSettings.add(settingsSafeReveal);
 
         menuSettings.add(new JSeparator());
 
         JMenuItem checkForUpdates = new JMenuItem("Check for updates");
-        checkForUpdates.addActionListener(e -> new Thread(Game::clickCheckForUpdates).start());
+        checkForUpdates.addActionListener(e -> new Thread(game::clickCheckForUpdates).start());
         menuSettings.add(checkForUpdates);
 
         frame.setJMenuBar(menuBar);
     }
 
-    private static void showFrame() {
+    private void showFrame() {
         frame.pack();
         frame.setVisible(true);
     }
 
-    public static Point getWindowLocation() {
+    Point getWindowLocation() {
         return frame.getLocationOnScreen();
     }
 
-    public static JLabel getLabelSeconds() {
+    JLabel getLabelSeconds() {
         return labelSeconds;
     }
 
-    public static Color getBackgroundColor() {
+    Color getBackgroundColor() {
         return backgroundColor;
     }
 
-    public static Image getImgMine() {
+    Image getImgMine() {
         return imgMine;
     }
 
-    public static JFrame getFrame() {
+    JFrame getFrame() {
         return frame;
     }
 
-    public static JPanel getPanelMain() {
+    JPanel getPanelMain() {
         return panelMain;
     }
 
-    public static JLabel getLabelMines() {
+    JLabel getLabelMines() {
         return labelMines;
     }
 
-    public static JMenuItem getSettingsSaferFirstClick() {
+    JMenuItem getSettingsSaferFirstClick() {
         return settingsSaferFirstClick;
     }
 
-    public static JMenuItem getSettingsSafeReveal() {
+    JMenuItem getSettingsSafeReveal() {
         return settingsSafeReveal;
     }
 
-    public static int getSizeButton() {
+    static int getSizeButton() {
         return SIZE_BUTTON;
     }
 
-    public static JMenuItem getGamePause() {
+    JMenuItem getGamePause() {
         return gamePause;
     }
 

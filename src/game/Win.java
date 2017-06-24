@@ -18,7 +18,7 @@ class Win extends JFrame {
     private static JLabel labelWin, labelScore, labelScore2;
     private static JButton buttonClose;
 
-    public Win(int score, Point point, Level level) {
+    Win(int score, Point point, Level level) {
         Win.score = score;
         Win.point = point;
         Win.level = level;

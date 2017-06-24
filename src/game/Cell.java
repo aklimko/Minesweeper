@@ -18,10 +18,10 @@ class Cell extends Coordinates {
     private JButton button;
     private ArrayList<Coordinates> neighbours;
 
+    private static Game game;
     private static Image imgFlag, imgMineCrossed;
-    private static boolean active;
 
-    public Cell(int row, int col) {
+    Cell(int row, int col) {
         super(row, col);
         mined = false;
         clicked = false;
@@ -32,8 +32,8 @@ class Cell extends Coordinates {
     private void findNeighbours() {
         int row = super.getRow();
         int col = super.getCol();
-        int rows = Game.getRows();
-        int columns = Game.getColumns();
+        int rows = game.getRows();
+        int columns = game.getColumns();
         neighbours = new ArrayList<>();
         if ((row > 0 && row < rows - 1) && (col > 0 && col < columns - 1)) {
             neighbours.add(new Coordinates(row - 1, col - 1));
@@ -87,7 +87,7 @@ class Cell extends Coordinates {
         }
     }
 
-    public JButton makeCell() {
+    JButton makeCell() {
         button = new JButton();
         button.setMaximumSize(new Dimension(GameView.getSizeButton(), GameView.getSizeButton()));
         button.setMargin(new Insets(0, 0, 0, 0));
@@ -99,14 +99,14 @@ class Cell extends Coordinates {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == 3) {
-                    if (!clicked && active) {
+                    if (!clicked && game.isActive()) {
                         if (!flagged) {
                             flagged = true;
-                            Game.minusMine();
+                            game.minusMine();
                             button.setIcon(new ImageIcon(imgFlag));
                         } else {
                             flagged = false;
-                            Game.plusMine();
+                            game.plusMine();
                             button.setIcon(null);
                         }
                     }
@@ -118,36 +118,36 @@ class Cell extends Coordinates {
     }
 
     private void clickLeftMouseButton() {
-        if (!flagged && active) {
+        if (!flagged && game.isActive()) {
             button.setContentAreaFilled(false);
             if (clicked && Settings.isSafeReveal()) {
-                Game.clickedNeighbours(super.getRow(), super.getCol());
+                game.clickedNeighbours(super.getRow(), super.getCol());
             } else {
                 clicked = true;
-                Game.addClickedCellsCounter();
-                if (!Game.isFirstClicked()) {
-                    Game.generateMines(Game.getNumMines(), super.getRow(), super.getCol());
-                    Game.setFirstClicked(true);
-                    Game.startTimerOnFirstClick();
+                game.addClickedCellsCounter();
+                if (!game.isFirstClicked()) {
+                    game.generateMines(game.getNumMines(), super.getRow(), super.getCol());
+                    game.setFirstClicked(true);
+                    game.startTimerOnFirstClick();
                 }
                 if (!mined) {
                     if (value != 0) {
                         button.setText(Integer.toString(value));
                     } else {
-                        Game.revealNeighbours(super.getRow(), super.getCol());
+                        game.revealNeighbours(super.getRow(), super.getCol());
                     }
-                    Game.checkWin();
+                    game.checkWin();
                 } else {
-                    Game.freezeGame();
-                    Game.makeBackgroundRed(super.getRow(), super.getCol());
-                    Game.revealMines();
-                    Game.revealWrongFlagged();
+                    game.freezeGame();
+                    game.makeBackgroundRed(super.getRow(), super.getCol());
+                    game.revealMines();
+                    game.revealWrongFlagged();
                 }
             }
         }
     }
 
-    public void setColor(int value) {
+    void setColor(int value) {
         Color color;
         switch (value) {
             case 1:
@@ -181,64 +181,60 @@ class Cell extends Coordinates {
         button.setForeground(color);
     }
 
-    public static void setImages(Image imgFlag, Image imgMineCrossed) {
+    static void setImages(Image imgFlag, Image imgMineCrossed) {
         Cell.imgFlag = imgFlag;
         Cell.imgMineCrossed = imgMineCrossed;
     }
 
-    public void clearText() {
+    static void setGameReference(Game game){
+        Cell.game = game;
+    }
+
+    void clearText() {
         button.setText("");
     }
 
-    public void setMined(boolean mined) {
+    void setMined(boolean mined) {
         this.mined = mined;
     }
 
-    public int isMined() {
+    int isMined() {
         return mined ? 1 : 0;
     }
 
-    public void setValue(int value) {
+    void setValue(int value) {
         this.value = value;
     }
 
-    public int getValue() {
+    int getValue() {
         return value;
     }
 
-    public JButton getButton() {
+    JButton getButton() {
         return button;
     }
 
-    public boolean isClicked() {
+    boolean isClicked() {
         return clicked;
     }
 
-    public void setClickedToFalse() {
+    void setClickedToFalse() {
         this.clicked = false;
     }
 
-    public void setFlaggedToFalse() {
+    void setFlaggedToFalse() {
         this.flagged = false;
     }
 
-    public void setImgMineCrossed() {
+    void setImgMineCrossed() {
         button.setIcon(new ImageIcon(imgMineCrossed));
     }
 
-    public boolean isFlagged() {
+    boolean isFlagged() {
         return flagged;
     }
 
-    public static void setActive(boolean active) {
-        Cell.active = active;
-    }
-
-    public static boolean isActive() {
-        return active;
-    }
-
-    public ArrayList<Coordinates> getNeighbours() {
+    ArrayList<Coordinates> getNeighbours() {
         return neighbours;
     }
 }

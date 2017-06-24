@@ -10,14 +10,14 @@ class VersionCheck {
     private static final String currentVersion = "1.0.2";
     private static final String urlString = "https://api.github.com/repos/exusar/Minesweeper/releases/latest";
 
-    public static boolean checkForNewestVersion() throws IOException {
+    static boolean checkForNewestVersion() throws IOException {
         URL url = new URL(urlString);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode json = objectMapper.readTree(url);
         return currentVersion.equals(json.get("tag_name").asText());
     }
 
-    public static String getCurrentVersion() {
+    static String getCurrentVersion() {
         return currentVersion;
     }
 }

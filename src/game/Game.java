@@ -10,16 +10,28 @@ import java.util.TimerTask;
 import javax.swing.*;
 
 class Game {
-    private static int rows, columns;
-    private static int numMines;
-    private static boolean firstClicked, won;
-    private static int redX, redY;
-    private static Timer timer;
-    private static int minesLeft, seconds, clickedCells;
-    private static boolean paused = false;
-    private static Cell[][] cells;
+    private int rows, columns;
+    private int numMines;
+    private boolean firstClicked;
+    private boolean won;
+    private boolean paused;
+    private boolean active;
+    private int redX, redY;
+    private int minesLeft, seconds;
+    private int clickedCells;
+    private Timer timer;
+    private Cell[][] cells;
+    private final GameView gameView;
 
-    public static void setLevel(Level level) {
+    Game(GameView gameView){
+        this.gameView = gameView;
+        paused = false;
+        active = true;
+        clickedCells = 0;
+        setLevel(Settings.getCurrentLevel());
+    }
+
+    private void setLevel(Level level) {
         switch (level) {
             case EASY:
                 rows = 8;
@@ -41,26 +53,26 @@ class Game {
         }
     }
 
-    public static void stopTimer() {
+    void stopTimer() {
         timer.cancel();
         timer.purge();
     }
 
-    public static void startTimer() {
+    void startTimer() {
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                GameView.getLabelSeconds().setText(Integer.toString(seconds++));
+                gameView.getLabelSeconds().setText(Integer.toString(seconds++));
             }
         }, 0, 1000);
     }
 
-    public static void restartGame() {
-        if (!Cell.isActive()) {
-            Cell.setActive(true);
+    void restartGame() {
+        if (!active) {
+            active = true;
             if (!won) {
-                cells[redX][redY].getButton().setBackground(GameView.getBackgroundColor());
+                cells[redX][redY].getButton().setBackground(gameView.getBackgroundColor());
             } else {
                 won = false;
             }
@@ -75,8 +87,8 @@ class Game {
                 cells[i][j].setFlaggedToFalse();
             }
         }
-        GameView.getLabelMines().setText(Integer.toString(numMines));
-        GameView.getLabelSeconds().setText("0");
+        gameView.getLabelMines().setText(Integer.toString(numMines));
+        gameView.getLabelSeconds().setText("0");
         if (firstClicked) {
             stopTimer();
             seconds = 0;
@@ -87,25 +99,26 @@ class Game {
         checkPauseRestart();
     }
 
-    private static void checkPauseRestart() {
+    private void checkPauseRestart() {
         if (paused) {
             paused = false;
-            GameView.getGamePause().setText("Pause");
-            GameView.getPanelMain().setVisible(true);
+            gameView.getGamePause().setText("Pause");
+            gameView.getPanelMain().setVisible(true);
         }
     }
 
-    public static void generateCells() {
+    void generateCells() {
         cells = new Cell[rows][columns];
+        Cell.setGameReference(this);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 cells[i][j] = new Cell(i, j);
-                GameView.getPanelMain().add(cells[i][j].makeCell());
+                gameView.getPanelMain().add(cells[i][j].makeCell());
             }
         }
     }
 
-    public static void clickedNeighbours(int row, int col) {
+    void clickedNeighbours(int row, int col) {
         int value = cells[row][col].getValue();
         int numFlagged = 0;
 
@@ -128,11 +141,11 @@ class Game {
         }
     }
 
-    public static void addClickedCellsCounter() {
+    void addClickedCellsCounter() {
         clickedCells++;
     }
 
-    public static void generateMines(int numMines, int row, int col) {
+    void generateMines(int numMines, int row, int col) {
         Random random = new Random();
         ArrayList<Coordinates> occupiedCoordinates = new ArrayList<>();
         if (Settings.isSaferFirstClick()) {
@@ -152,13 +165,13 @@ class Game {
         checkValues();
     }
 
-    private static Coordinates convertPositionToCoordinates(int position) {
+    private Coordinates convertPositionToCoordinates(int position) {
         int row = position / columns;
         int col = position % columns;
         return new Coordinates(row, col);
     }
 
-    private static void checkValues() {
+    private void checkValues() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 if (cells[i][j].isMined() == 0) {
@@ -170,7 +183,7 @@ class Game {
         }
     }
 
-    private static int countNearbyMines(int row, int col) {
+    private int countNearbyMines(int row, int col) {
         ArrayList<Coordinates> neighbours;
         neighbours = cells[row][col].getNeighbours();
         int count = 0;
@@ -180,12 +193,12 @@ class Game {
         return count;
     }
 
-    public static void startTimerOnFirstClick() {
+    void startTimerOnFirstClick() {
         seconds = 0;
         startTimer();
     }
 
-    public static void revealNeighbours(int row, int col) {
+    void revealNeighbours(int row, int col) {
         ArrayList<Coordinates> neighbours;
         neighbours = cells[row][col].getNeighbours();
         for (Coordinates neighbour : neighbours) {
@@ -195,37 +208,37 @@ class Game {
         }
     }
 
-    public static void checkWin() {
+    void checkWin() {
         if (clickedCells == rows * columns - numMines && !won) {
             won = true;
             freezeGame();
-            new Win(Integer.parseInt(GameView.getLabelSeconds().getText()), GameView.getWindowLocation(), Settings.getCurrentLevel());
+            new Win(Integer.parseInt(gameView.getLabelSeconds().getText()), gameView.getWindowLocation(), Settings.getCurrentLevel());
         }
     }
 
-    public static void freezeGame() {
+    void freezeGame() {
         stopTimer();
-        Cell.setActive(false);
+        active = false;
     }
 
-    public static void makeBackgroundRed(int row, int col) {
+    void makeBackgroundRed(int row, int col) {
         redX = row;
         redY = col;
         cells[row][col].getButton().setOpaque(true);
         cells[row][col].getButton().setBackground(Color.RED);
     }
 
-    public static void revealMines() {
+    void revealMines() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 if (cells[i][j].isMined() == 1 && !cells[i][j].isFlagged()) {
-                    cells[i][j].getButton().setIcon(new ImageIcon(GameView.getImgMine()));
+                    cells[i][j].getButton().setIcon(new ImageIcon(gameView.getImgMine()));
                 }
             }
         }
     }
 
-    public static void revealWrongFlagged() {
+    void revealWrongFlagged() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 if (cells[i][j].isMined() == 0 && cells[i][j].isFlagged()) {
@@ -235,17 +248,17 @@ class Game {
         }
     }
 
-    public static void plusMine() {
-        GameView.getLabelMines().setText(Integer.toString(++minesLeft));
+    void plusMine() {
+        gameView.getLabelMines().setText(Integer.toString(++minesLeft));
     }
 
-    public static void minusMine() {
-        GameView.getLabelMines().setText(Integer.toString(--minesLeft));
+    void minusMine() {
+        gameView.getLabelMines().setText(Integer.toString(--minesLeft));
     }
 
-    public static void restartFrame(Level level, Point point) {
-        GameView.getFrame().removeAll();
-        GameView.getFrame().dispose();
+    void restartFrame(Level level, Point point) {
+        gameView.getFrame().removeAll();
+        gameView.getFrame().dispose();
         if (timer != null) {
             stopTimer();
         }
@@ -254,28 +267,28 @@ class Game {
         new GameView(point);
     }
 
-    public static void setSaferFirstClickText() {
+    void setSaferFirstClickText() {
         if (Settings.isSaferFirstClick()) {
-            GameView.getSettingsSaferFirstClick().setText("\u221ASafer first click");
+            gameView.getSettingsSaferFirstClick().setText("\u221ASafer first click");
         } else {
-            GameView.getSettingsSaferFirstClick().setText("Safer first click");
+            gameView.getSettingsSaferFirstClick().setText("Safer first click");
         }
     }
 
-    public static void setSafeRevealText() {
+    void setSafeRevealText() {
         if (Settings.isSafeReveal()) {
-            GameView.getSettingsSafeReveal().setText("\u221ASafe reveal");
+            gameView.getSettingsSafeReveal().setText("\u221ASafe reveal");
         } else {
-            GameView.getSettingsSafeReveal().setText("Safe reveal");
+            gameView.getSettingsSafeReveal().setText("Safe reveal");
         }
     }
 
-    public static void clickCheckForUpdates() {
+    void clickCheckForUpdates() {
         boolean upToDate;
         try {
             upToDate = VersionCheck.checkForNewestVersion();
         } catch (IOException e1) {
-            JOptionPane.showMessageDialog(GameView.getFrame(), "Unable to check for updates.");
+            JOptionPane.showMessageDialog(gameView.getFrame(), "Unable to check for updates.");
             return;
         }
         String message;
@@ -284,46 +297,46 @@ class Game {
         } else {
             message = "There is a new version released.\nVisit github.com/exusar/Minesweeper/releases/latest to download.";
         }
-        JOptionPane.showMessageDialog(GameView.getFrame(), message);
+        JOptionPane.showMessageDialog(gameView.getFrame(), message);
     }
 
-    public static boolean isFirstClicked() {
+    boolean isFirstClicked() {
         return firstClicked;
     }
 
-    public static void setFirstClicked(boolean firstClicked) {
-        Game.firstClicked = firstClicked;
+    void setFirstClicked(boolean firstClicked) {
+        this.firstClicked = firstClicked;
     }
 
-    public static int getNumMines() {
+    int getNumMines() {
         return numMines;
     }
 
-    public static int getRows() {
+    int getRows() {
         return rows;
     }
 
-    public static int getColumns() {
+    int getColumns() {
         return columns;
     }
 
-    public static void setMinesLeft(int minesLeft) {
-        Game.minesLeft = minesLeft;
+    void setMinesLeft(int minesLeft) {
+        this.minesLeft = minesLeft;
     }
 
-    public static void setWon(boolean won) {
-        Game.won = won;
+    void setWon(boolean won) {
+        this.won = won;
     }
 
-    public static void setClickedCells(int clickedCells) {
-        Game.clickedCells = clickedCells;
-    }
-
-    public static boolean isPaused() {
+    boolean isPaused() {
         return paused;
     }
 
-    public static void setPaused(boolean paused) {
-        Game.paused = paused;
+    void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    boolean isActive() {
+        return active;
     }
 }

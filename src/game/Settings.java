@@ -17,7 +17,7 @@ class Settings {
     private static Level currentLevel;
     private static boolean saferFirstClick, safeReveal;
 
-    public static void loadFromFile() {
+    static void loadFromFile() {
         try {
             String fileData = new String(Files.readAllBytes(Paths.get("settings.json")));
             ObjectMapper objectMapper = new ObjectMapper();
@@ -36,7 +36,7 @@ class Settings {
         safeReveal = true;
     }
 
-    public static void checkIfChanged() {
+    static void checkIfChanged() {
         try {
             String fileData = new String(Files.readAllBytes(Paths.get("settings.json")));
             ObjectMapper objectMapper = new ObjectMapper();
@@ -66,27 +66,27 @@ class Settings {
         }
     }
 
-    public static boolean isSaferFirstClick() {
+    static boolean isSaferFirstClick() {
         return saferFirstClick;
     }
 
-    public static void setSaferFirstClick(boolean saferFirstClick) {
+    static void setSaferFirstClick(boolean saferFirstClick) {
         Settings.saferFirstClick = saferFirstClick;
     }
 
-    public static boolean isSafeReveal() {
+    static boolean isSafeReveal() {
         return safeReveal;
     }
 
-    public static void setSafeReveal(boolean safeReveal) {
+    static void setSafeReveal(boolean safeReveal) {
         Settings.safeReveal = safeReveal;
     }
 
-    public static Level getCurrentLevel() {
+    static Level getCurrentLevel() {
         return currentLevel;
     }
 
-    public static void setCurrentLevel(Level currentLevel) {
+    static void setCurrentLevel(Level currentLevel) {
         Settings.currentLevel = currentLevel;
     }
 }
