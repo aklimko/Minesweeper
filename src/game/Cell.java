@@ -1,14 +1,12 @@
 package game;
 
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Insets;
+import java.util.List;
+import java.util.ArrayList;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import java.awt.Color;
-import java.util.ArrayList;
 
 import static java.awt.Color.*;
 
@@ -16,7 +14,7 @@ class Cell extends Coordinates {
     private int value;
     private boolean mined, clicked, flagged;
     private JButton button;
-    private ArrayList<Coordinates> neighbours;
+    private List<Coordinates> neighbours;
 
     private static Game game;
     private static Image imgFlag, imgMineCrossed;
@@ -34,7 +32,7 @@ class Cell extends Coordinates {
         int col = super.getCol();
         int rows = game.getRows();
         int columns = game.getColumns();
-        neighbours = new ArrayList<>();
+        neighbours = new ArrayList<>(8);
         if ((row > 0 && row < rows - 1) && (col > 0 && col < columns - 1)) {
             neighbours.add(new Coordinates(row - 1, col - 1));
             neighbours.add(new Coordinates(row, col - 1));
@@ -127,6 +125,7 @@ class Cell extends Coordinates {
                 game.addClickedCellsCounter();
                 if (!game.isFirstClicked()) {
                     game.generateMines(game.getNumMines(), super.getRow(), super.getCol());
+                    game.checkValues();
                     game.setFirstClicked(true);
                     game.startTimerOnFirstClick();
                 }
@@ -234,7 +233,7 @@ class Cell extends Coordinates {
         return flagged;
     }
 
-    ArrayList<Coordinates> getNeighbours() {
+    List<Coordinates> getNeighbours() {
         return neighbours;
     }
 }

@@ -3,10 +3,8 @@ package game;
 import java.awt.Color;
 import java.awt.Point;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 import java.util.Timer;
-import java.util.TimerTask;
 import javax.swing.*;
 
 class Game {
@@ -77,6 +75,16 @@ class Game {
                 won = false;
             }
         }
+        resetAllMines();
+        gameView.getLabelMines().setText(Integer.toString(numMines));
+        gameView.getLabelSeconds().setText("0");
+        if (firstClicked) {
+            resetCounters();
+        }
+        checkPauseRestart();
+    }
+
+    private void resetAllMines(){
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 cells[i][j].setMined(false);
@@ -87,16 +95,14 @@ class Game {
                 cells[i][j].setFlaggedToFalse();
             }
         }
-        gameView.getLabelMines().setText(Integer.toString(numMines));
-        gameView.getLabelSeconds().setText("0");
-        if (firstClicked) {
-            stopTimer();
-            seconds = 0;
-            clickedCells = 0;
-            minesLeft = numMines;
-            firstClicked = false;
-        }
-        checkPauseRestart();
+    }
+
+    private void resetCounters(){
+        stopTimer();
+        seconds = 0;
+        clickedCells = 0;
+        minesLeft = numMines;
+        firstClicked = false;
     }
 
     private void checkPauseRestart() {
@@ -122,7 +128,7 @@ class Game {
         int value = cells[row][col].getValue();
         int numFlagged = 0;
 
-        ArrayList<Coordinates> neighbours = cells[row][col].getNeighbours();
+        List<Coordinates> neighbours = cells[row][col].getNeighbours();
         for (Coordinates neighbour : neighbours) {
             int x = neighbour.getRow();
             int y = neighbour.getCol();
@@ -147,7 +153,7 @@ class Game {
 
     void generateMines(int numMines, int row, int col) {
         Random random = new Random();
-        ArrayList<Coordinates> occupiedCoordinates = new ArrayList<>();
+        List<Coordinates> occupiedCoordinates = new ArrayList<>();
         if (Settings.isSaferFirstClick()) {
             occupiedCoordinates.addAll(cells[row][col].getNeighbours());
         }
@@ -155,14 +161,14 @@ class Game {
 
         int generatedMinesCounter = 0;
         while (generatedMinesCounter < numMines) {
-            Coordinates coordinates = convertPositionToCoordinates(random.nextInt(rows * columns));
+            int randomPosition = random.nextInt(rows * columns);
+            Coordinates coordinates = convertPositionToCoordinates(randomPosition);
             if (!occupiedCoordinates.contains(coordinates)) {
                 occupiedCoordinates.add(coordinates);
                 cells[coordinates.getRow()][coordinates.getCol()].setMined(true);
                 generatedMinesCounter++;
             }
         }
-        checkValues();
     }
 
     private Coordinates convertPositionToCoordinates(int position) {
@@ -171,7 +177,7 @@ class Game {
         return new Coordinates(row, col);
     }
 
-    private void checkValues() {
+    void checkValues() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 if (cells[i][j].isMined() == 0) {
@@ -184,8 +190,7 @@ class Game {
     }
 
     private int countNearbyMines(int row, int col) {
-        ArrayList<Coordinates> neighbours;
-        neighbours = cells[row][col].getNeighbours();
+        List<Coordinates> neighbours = cells[row][col].getNeighbours();
         int count = 0;
         for (Coordinates neighbour : neighbours) {
             count += cells[neighbour.getRow()][neighbour.getCol()].isMined();
@@ -199,8 +204,7 @@ class Game {
     }
 
     void revealNeighbours(int row, int col) {
-        ArrayList<Coordinates> neighbours;
-        neighbours = cells[row][col].getNeighbours();
+        List<Coordinates> neighbours = cells[row][col].getNeighbours();
         for (Coordinates neighbour : neighbours) {
             if (!cells[neighbour.getRow()][neighbour.getCol()].isClicked()) {
                 cells[neighbour.getRow()][neighbour.getCol()].getButton().doClick(0);
