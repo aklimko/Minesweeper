@@ -1,11 +1,11 @@
-package game;
+package pl.adamklimko.minesweeper;
 
-import java.awt.Color;
-import java.awt.Point;
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import java.util.Timer;
-import javax.swing.*;
 
 class Game {
     private int rows, columns;

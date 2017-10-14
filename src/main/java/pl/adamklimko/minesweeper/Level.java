@@ -1,4 +1,4 @@
-package game;
+package pl.adamklimko.minesweeper;
 
 enum Level {
     EASY(1),

@@ -1,13 +1,8 @@
-package game;
+package pl.adamklimko.minesweeper;
 
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.Point;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 class Win extends JFrame {
     private static Level level;

@@ -1,4 +1,4 @@
-package game;
+package pl.adamklimko.minesweeper;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -7,7 +7,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
-import static game.Level.*;
+import static pl.adamklimko.minesweeper.Level.*;
 
 class GameView {
     private static final int SIZE_BUTTON = 25;
@@ -64,9 +64,9 @@ class GameView {
 
     private void loadImages() {
         try {
-            imgFlag = ImageIO.read(getClass().getResource("/img/flag.png"));
-            imgMine = ImageIO.read(getClass().getResource("/img/mine.png"));
-            imgMineCrossed = ImageIO.read(getClass().getResource("/img/mine_crossed.png"));
+            imgFlag = ImageIO.read(getClass().getClassLoader().getResource("flag.png"));
+            imgMine = ImageIO.read(getClass().getClassLoader().getResource("mine.png"));
+            imgMineCrossed = ImageIO.read(getClass().getClassLoader().getResource("mine_crossed.png"));
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Cannot load images.");
             System.exit(0);
@@ -274,6 +274,6 @@ class GameView {
 
     public static void main(String[] args) {
         Settings.loadFromFile();
-        javax.swing.SwingUtilities.invokeLater(GameView::new);
+        SwingUtilities.invokeLater(GameView::new);
     }
 }

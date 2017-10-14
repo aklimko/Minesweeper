@@ -1,4 +1,4 @@
-package game;
+package pl.adamklimko.minesweeper;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -11,11 +11,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static game.Level.*;
+import static pl.adamklimko.minesweeper.Level.EASY;
 
 class Settings {
     private static Level currentLevel;
-    private static boolean saferFirstClick, safeReveal;
+    private static boolean saferFirstClick;
+    private static boolean safeReveal;
 
     static void loadFromFile() {
         try {

@@ -1,4 +1,4 @@
-package game;
+package pl.adamklimko.minesweeper;
 
 class Coordinates {
     private final int row;

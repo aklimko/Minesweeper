@@ -1,12 +1,11 @@
-package game;
+package pl.adamklimko.minesweeper;
 
-import java.util.List;
-import java.util.ArrayList;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.awt.Color.*;
 
